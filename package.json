@@ -1,0 +1,27 @@
+{
+  "name": "backend-furniture",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon ./src/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/huydat2001/Furniture-Selling-Website.git"
+  },
+  "author": "huydat",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/huydat2001/Furniture-Selling-Website/issues"
+  },
+  "homepage": "https://github.com/huydat2001/Furniture-Selling-Website#readme",
+  "description": "",
+  "dependencies": {
+    "dotenv": "16.0.3",
+    "express": "4.18.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  }
+}
