@@ -8,9 +8,11 @@ module.exports = {
       let { page, limit } = req.query;
       const result = await getAllUsers(page, limit, req.query);
       return res.status(200).json({
-        statusCode: true,
-        pagination: result.pagination,
-        data: result.users,
+        data: {
+          statusCode: true,
+          pagination: result.pagination,
+          result: result.users,
+        },
       });
     } catch (error) {
       return res.status(500).json({
