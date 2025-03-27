@@ -54,4 +54,28 @@ module.exports = {
       throw new Error(error.message);
     }
   },
+  findByIDUser: async (id) => {
+    try {
+      let user = await Account.findById(id).exec();
+      return user;
+    } catch (error) {
+      console.log("error :>> ", error);
+      return null;
+    }
+  },
+  updateUser: async (newUser) => {
+    try {
+      let findAccount = await module.exports.findByIDUser(newUser.id);
+      let user = await Account.updateOne({ _id: findAccount }, newUser);
+      return user;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  },
+  deleteUSer: async (id) => {
+    try {
+      let findAccount = await module.exports.findByIDUser(id);
+      // let
+    } catch (error) {}
+  },
 };

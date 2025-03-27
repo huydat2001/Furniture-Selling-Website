@@ -2,8 +2,12 @@ const express = require("express");
 const {
   getUsersAPI,
   postCreateUserAPI,
+  putUpdateUserAPI,
 } = require("../controllers/user.controller");
-const { validateCreateUser } = require("../middleware/schemas/user.validate");
+const {
+  validateCreateUser,
+  validateUpdateUser,
+} = require("../middleware/schemas/user.validate");
 
 const routerAPI = express.Router();
 routerAPI.get("/", (req, res) => {
@@ -11,4 +15,5 @@ routerAPI.get("/", (req, res) => {
 });
 routerAPI.get("/user", getUsersAPI);
 routerAPI.post("/user", validateCreateUser, postCreateUserAPI);
+routerAPI.put("/user", validateUpdateUser, putUpdateUserAPI);
 module.exports = routerAPI; //export default
