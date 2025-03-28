@@ -25,7 +25,8 @@
     "ejs": "3.1.8",
     "express": "4.18.2",
     "joi": "17.7.0",
-    "mongoose": "^8.13.0"
+    "mongoose": "^8.13.0",
+    "mongoose-delete": "^1.0.2"
   },
   "devDependencies": {
     "nodemon": "^2.0.20"

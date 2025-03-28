@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
+var mongoose_delete = require("mongoose-delete");
 const accountSchema = new mongoose.Schema(
   {
     username: {
@@ -67,6 +68,10 @@ accountSchema.pre("save", async function (next) {
     this.password = await bcrypt.hash(this.password, 10);
   }
   next();
+});
+accountSchema.plugin(mongoose_delete, {
+  deletedAt: true,
+  overrideMethods: "all",
 });
 const Account = mongoose.model("Account", accountSchema);
 module.exports = Account;

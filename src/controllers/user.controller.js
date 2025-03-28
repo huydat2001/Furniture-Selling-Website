@@ -3,6 +3,7 @@ const {
   getAllUsers,
   creatUser,
   updateUser,
+  deleteUSer,
 } = require("../services/user.services");
 const Joi = require("joi");
 
@@ -145,11 +146,24 @@ module.exports = {
     try {
       let id = req.body.id;
       let result = await deleteUSer(id);
-
+      if (!result || result.deletedCount === 0) {
+        throw new Error("Người dùng không tồn tại hoặc đã bị xóa trước đó");
+      }
       return res.status(200).json({
         statusCode: true,
         data: result,
       });
-    } catch (error) {}
+    } catch (error) {
+      const statusCode = error.message.includes("Người dùng không tồn tại")
+        ? 404
+        : 500;
+      return res.status(statusCode).json({
+        success: false,
+        error: {
+          code: statusCode,
+          message: error.message,
+        },
+      });
+    }
   },
 };

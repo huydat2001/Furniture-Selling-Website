@@ -74,8 +74,13 @@ module.exports = {
   },
   deleteUSer: async (id) => {
     try {
-      let findAccount = await module.exports.findByIDUser(id);
-      // let
-    } catch (error) {}
+      let user = await Account.deleteById({ _id: id });
+      if (!user || user.deletedCount === 0) {
+        throw new Error("Người dùng không tồn tại hoặc đã bị xóa trước đó");
+      }
+      return user;
+    } catch (error) {
+      throw new Error(error.message);
+    }
   },
 };

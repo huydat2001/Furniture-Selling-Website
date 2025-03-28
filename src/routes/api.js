@@ -3,6 +3,7 @@ const {
   getUsersAPI,
   postCreateUserAPI,
   putUpdateUserAPI,
+  deleteUserAPI,
 } = require("../controllers/user.controller");
 const {
   validateCreateUser,
@@ -16,4 +17,5 @@ routerAPI.get("/", (req, res) => {
 routerAPI.get("/user", getUsersAPI);
 routerAPI.post("/user", validateCreateUser, postCreateUserAPI);
 routerAPI.put("/user", validateUpdateUser, putUpdateUserAPI);
+routerAPI.delete("/user", deleteUserAPI);
 module.exports = routerAPI; //export default
