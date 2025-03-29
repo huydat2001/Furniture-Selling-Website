@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
-const bcrypt = require("bcrypt");
+// const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
+
 var mongoose_delete = require("mongoose-delete");
 const accountSchema = new mongoose.Schema(
   {

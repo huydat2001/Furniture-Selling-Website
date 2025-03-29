@@ -1,4 +1,4 @@
-const Account = require("../models/account");
+const Account = require("../../models/account");
 const aqp = require("api-query-params");
 module.exports = {
   getAllUsers: async (page, limit, queryString) => {
@@ -66,7 +66,7 @@ module.exports = {
   updateUser: async (newUser) => {
     try {
       const id = newUser.id;
-      console.log("newUser.role :>> ", newUser.role);
+
       let user = await Account.updateOne(
         { _id: id },
         {

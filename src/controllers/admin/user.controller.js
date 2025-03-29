@@ -1,10 +1,9 @@
-const Account = require("../models/account");
 const {
   getAllUsers,
   creatUser,
   updateUser,
   deleteUSer,
-} = require("../services/user.services");
+} = require("../../services/admin/user.services");
 const Joi = require("joi");
 
 module.exports = {

@@ -4,18 +4,46 @@ const {
   postCreateUserAPI,
   putUpdateUserAPI,
   deleteUserAPI,
-} = require("../controllers/user.controller");
+} = require("../controllers/admin/user.controller");
 const {
   validateCreateUser,
   validateUpdateUser,
 } = require("../middleware/schemas/user.validate");
 
+const { login, refreshToken } = require("../controllers/auth.controller");
+const {
+  authenticateToken,
+  checkRole,
+} = require("../middleware/auth.middleware");
 const routerAPI = express.Router();
-routerAPI.get("/", (req, res) => {
-  res.send("heelo api");
-});
-routerAPI.get("/user", getUsersAPI);
-routerAPI.post("/user", validateCreateUser, postCreateUserAPI);
-routerAPI.put("/user", validateUpdateUser, putUpdateUserAPI);
-routerAPI.delete("/user/:id", deleteUserAPI);
+
+routerAPI.post("/auth/login", login);
+routerAPI.post("/auth/refresh-token", refreshToken);
+
+routerAPI.get(
+  "/user",
+  authenticateToken,
+  checkRole(["admin", "staff"]),
+  getUsersAPI
+);
+routerAPI.post(
+  "/user",
+  authenticateToken,
+  checkRole(["admin", "staff"]),
+  validateCreateUser,
+  postCreateUserAPI
+);
+routerAPI.put(
+  "/user",
+  authenticateToken,
+  checkRole(["admin", "staff"]),
+  validateUpdateUser,
+  putUpdateUserAPI
+);
+routerAPI.delete(
+  "/user/:id",
+  authenticateToken,
+  checkRole(["admin", "staff"]),
+  deleteUserAPI
+);
 module.exports = routerAPI; //export default
