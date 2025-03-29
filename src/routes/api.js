@@ -17,5 +17,5 @@ routerAPI.get("/", (req, res) => {
 routerAPI.get("/user", getUsersAPI);
 routerAPI.post("/user", validateCreateUser, postCreateUserAPI);
 routerAPI.put("/user", validateUpdateUser, putUpdateUserAPI);
-routerAPI.delete("/user", deleteUserAPI);
+routerAPI.delete("/user/:id", deleteUserAPI);
 module.exports = routerAPI; //export default

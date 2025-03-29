@@ -65,8 +65,22 @@ module.exports = {
   },
   updateUser: async (newUser) => {
     try {
-      let findAccount = await module.exports.findByIDUser(newUser.id);
-      let user = await Account.updateOne({ _id: findAccount }, newUser);
+      const id = newUser.id;
+      console.log("newUser.role :>> ", newUser.role);
+      let user = await Account.updateOne(
+        { _id: id },
+        {
+          password: newUser.password,
+          fullName: newUser.fullName,
+          role: newUser.role,
+          phone: newUser.phone,
+          city: newUser.address?.[0] ?? undefined,
+          state: newUser.address?.[1] ?? undefined,
+          street: newUser.address?.[2] ?? undefined,
+          role: newUser.role,
+        }
+      );
+
       return user;
     } catch (error) {
       throw new Error(error.message);

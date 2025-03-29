@@ -43,19 +43,15 @@ module.exports = {
         city,
         state,
         country,
+        role,
       } = req.body;
-      const finalAddress = address || {
-        street: "",
-        city: "",
-        state: "",
-        country: "",
+      const finalAddress = {
+        street: street ?? "", // Nếu street là undefined/null, gán ""
+        city: city ?? "",
+        state: state ?? "",
+        country: country ?? "",
       };
-      if (street || city || state || country) {
-        finalAddress.street = street;
-        finalAddress.city = city;
-        finalAddress.state = state;
-        finalAddress.country = country;
-      }
+
       const newUser = {
         username,
         email,
@@ -63,6 +59,7 @@ module.exports = {
         fullName,
         address: finalAddress,
         phone,
+        role,
       };
       let result = await creatUser(newUser);
       if (!result) {
@@ -104,6 +101,7 @@ module.exports = {
         city,
         state,
         country,
+        role,
       } = req.body;
       const finalAddress = address || {
         street: "",
@@ -123,7 +121,9 @@ module.exports = {
         fullName,
         address: finalAddress,
         phone,
+        role,
       };
+
       let result = await updateUser(newUser);
       if (!result) {
         throw new Error("Không thể cập nhật người dùng");
@@ -144,7 +144,7 @@ module.exports = {
   },
   deleteUserAPI: async (req, res) => {
     try {
-      let id = req.body.id;
+      let { id } = req.params;
       let result = await deleteUSer(id);
       if (!result || result.deletedCount === 0) {
         throw new Error("Người dùng không tồn tại hoặc đã bị xóa trước đó");
