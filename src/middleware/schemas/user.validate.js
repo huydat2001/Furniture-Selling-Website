@@ -1,8 +1,9 @@
 const Joi = require("joi");
+const validate = require("./validate");
 
 // Schema cho tạo user (các field bắt buộc)
 const createUserSchema = Joi.object({
-  username: Joi.string().min(3).max(25).messages({
+  username: Joi.string().min(3).max(25).required().messages({
     "string.min": "Username phải có ít nhất 6 ký tự",
     "string.max": "Username không được vượt quá 25 ký tự",
   }),
@@ -64,18 +65,6 @@ const updateUserSchema = Joi.object({
 }).unknown(true);
 
 // Middleware validate
-const validate = (schema) => (req, res, next) => {
-  const { error } = schema.validate(req.body, { abortEarly: false });
-  if (error) {
-    const errorMessages = error.details.map((detail) => detail.message);
-    return res.status(400).json({
-      statusCode: false,
-      message: errorMessages,
-      error: "Bad Request",
-    });
-  }
-  next();
-};
 
 module.exports = {
   validateCreateUser: validate(createUserSchema),

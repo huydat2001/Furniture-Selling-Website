@@ -4,7 +4,6 @@ const {
   updateUser,
   deleteUSer,
 } = require("../../services/admin/user.services");
-const Joi = require("joi");
 
 module.exports = {
   getUsersAPI: async (req, res) => {

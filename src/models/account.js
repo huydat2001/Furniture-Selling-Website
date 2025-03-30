@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-// const bcrypt = require("bcrypt");
 const bcrypt = require("bcryptjs");
 
 var mongoose_delete = require("mongoose-delete");
@@ -59,6 +58,11 @@ const accountSchema = new mongoose.Schema(
     },
     lastLogin: {
       type: Date,
+    },
+    status: {
+      type: String,
+      enum: ["active", "banned"],
+      default: "active",
     },
   },
   {
