@@ -10,7 +10,11 @@ const {
   validateUpdateUser,
 } = require("../middleware/schemas/user.validate");
 
-const { login, refreshToken } = require("../controllers/auth.controller");
+const {
+  login,
+  refreshToken,
+  getAccountAPI,
+} = require("../controllers/auth.controller");
 const {
   authenticateToken,
   checkRole,
@@ -19,6 +23,7 @@ const routerAPI = express.Router();
 
 routerAPI.post("/auth/login", login);
 routerAPI.post("/auth/refresh-token", refreshToken);
+routerAPI.get("/auth/account", authenticateToken, getAccountAPI);
 
 routerAPI.get(
   "/user",

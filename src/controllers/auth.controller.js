@@ -1,6 +1,7 @@
 var jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const Account = require("../models/account");
+const { getAccount } = require("../services/admin/user.services");
 
 const login = async (req, res) => {
   const { username, password } = req.body;
@@ -33,6 +34,7 @@ const login = async (req, res) => {
       message: "Login successful",
       accessToken,
       refreshToken,
+      data: user,
     });
   } catch (error) {
     return res.status(500).json({ message: "Internal server error" });
@@ -63,4 +65,21 @@ const refreshToken = (req, res) => {
     return res.status(403).json({ message: "Refresh token không hợp lệ" });
   }
 };
-module.exports = { login, refreshToken };
+const getAccountAPI = async (req, res) => {
+  try {
+    const user = req.user; // Lấy thông tin người dùng từ token
+    if (!user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    const result = await getAccount(user.id);
+    if (!result) {
+      return res.status(404).json({ message: "Không tìm thấy người dùng" });
+    }
+    return res.status(200).json({
+      statusCode: true,
+      message: "Lấy tài khoản thành công",
+      data: result,
+    });
+  } catch (error) {}
+};
+module.exports = { login, refreshToken, getAccountAPI };

@@ -97,4 +97,12 @@ module.exports = {
       throw new Error(error.message);
     }
   },
+  getAccount: async (id) => {
+    try {
+      const account = await Account.findById(id).select("-password");
+      return account;
+    } catch (error) {
+      return res.status(500).json({ message: error.message });
+    }
+  },
 };
