@@ -38,6 +38,9 @@ const createUserSchema = Joi.object({
     .messages({
       "any.only": "Vai trò phải là customer, admin hoặc staff",
     }),
+  status: Joi.string().valid("active", "banned").default("active").messages({
+    "any.only": "Trạng thái phải là active hoặc banned",
+  }),
 }).unknown(true);
 
 // Schema cho cập nhật user (các field không bắt buộc)

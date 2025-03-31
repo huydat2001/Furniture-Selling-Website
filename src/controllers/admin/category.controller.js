@@ -53,7 +53,7 @@ module.exports = {
           success: false,
           error: {
             code: 400,
-            messages: errorMessages, // Trả về mảng
+            message: errorMessages, // Trả về mảng
           },
         });
       }

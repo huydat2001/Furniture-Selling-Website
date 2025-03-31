@@ -29,18 +29,30 @@ module.exports = {
   },
   creatUser: async (newUser) => {
     try {
-      const existingUser = await Account.findOne({
+      const existingUser = await Account.findOneWithDeleted({
         $or: [{ email: newUser.email }, { username: newUser.username }],
       });
-
-      // Thu thập tất cả lỗi trùng lặp
+      console.log("existingUser :>> ", existingUser);
       const errors = [];
+
       if (existingUser) {
-        if (existingUser.email === newUser.email) {
-          errors.push("Email đã tồn tại");
-        }
-        if (existingUser.username === newUser.username) {
-          errors.push("Username đã tồn tại");
+        if (existingUser.deleted) {
+          // Chỉ khôi phục nếu cả email và username khớp (tùy yêu cầu)
+          if (
+            existingUser.email === newUser.email &&
+            existingUser.username === newUser.username
+          ) {
+            await Account.restore({ _id: existingUser._id });
+            return await Account.findById(existingUser._id).exec();
+          }
+        } else {
+          // Thu thập lỗi nếu tài khoản tồn tại và không bị xóa mềm
+          if (existingUser.email === newUser.email) {
+            errors.push("Email đã tồn tại");
+          }
+          if (existingUser.username === newUser.username) {
+            errors.push("Username đã tồn tại");
+          }
         }
       }
 
@@ -48,7 +60,7 @@ module.exports = {
       if (errors.length > 0) {
         throw new Error(errors.join(", "));
       }
-      let user = await Account.create(newUser);
+      const user = await Account.create(newUser);
       return user;
     } catch (error) {
       throw new Error(error.message);
