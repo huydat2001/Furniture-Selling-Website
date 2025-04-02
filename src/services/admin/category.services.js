@@ -32,15 +32,7 @@ module.exports = {
       throw new Error("Lỗi truy vấn dữ liệu: " + error.message);
     }
   },
-  findByIDCategory: async (id) => {
-    try {
-      let category = await Category.findById(id).exec();
-      return category;
-    } catch (error) {
-      console.log("error :>> ", error);
-      return error;
-    }
-  },
+
   createCategory: async (newCategory) => {
     try {
       const existingCategory = await Category.findOneWithDeleted({

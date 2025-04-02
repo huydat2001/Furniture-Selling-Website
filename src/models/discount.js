@@ -7,6 +7,7 @@ const discountSchema = new mongoose.Schema(
       type: String, // Mã giảm giá (ví dụ: "SALE20")
       trim: true,
       unique: true,
+      required: true,
     },
     type: {
       type: String, // Loại giảm giá: "percentage" hoặc "fixed"
@@ -15,12 +16,15 @@ const discountSchema = new mongoose.Schema(
     },
     value: {
       type: Number, // Giá trị giảm (ví dụ: 20 nếu là 20%, hoặc 50000 nếu là 50k)
+      required: true,
     },
     startDate: {
       type: Date, // Ngày bắt đầu áp dụng
+      default: Date.now,
     },
     endDate: {
-      type: Date, // Ngày hết hạn
+      type: Date, // Ngày hết hạn\
+      default: null,
     },
     maxUses: {
       type: Number, // Số lần sử dụng tối đa
@@ -40,7 +44,10 @@ const discountSchema = new mongoose.Schema(
         ref: "Product", // Danh sách sản phẩm áp dụng giảm giá
       },
     ],
-
+    isApplicableToAll: {
+      type: Boolean,
+      default: true, // Mặc định áp dụng cho tất cả sản phẩm
+    },
     status: {
       type: String,
       enum: ["active", "inactive", "expired"],

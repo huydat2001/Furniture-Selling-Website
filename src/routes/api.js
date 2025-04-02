@@ -29,6 +29,16 @@ const {
   validateCreateCategory,
   validateUpdateCategory,
 } = require("../middleware/schemas/category.validate");
+const {
+  getAllDiscountAPI,
+  postCreateDiscountAPI,
+  putUpdateDiscountAPI,
+  deleteDiscountAPI,
+} = require("../controllers/admin/discount.controller");
+const {
+  validateCreateDiscount,
+  validateUpdateDiscount,
+} = require("../middleware/schemas/discount.validate");
 const routerAPI = express.Router();
 
 //api login
@@ -64,7 +74,7 @@ routerAPI.delete(
   deleteUserAPI
 );
 
-//api product
+//api category
 
 routerAPI.get(
   "/category",
@@ -91,5 +101,34 @@ routerAPI.delete(
   authenticateToken,
   checkRole(["admin", "staff"]),
   deleteCategoryAPI
+);
+
+//api discount
+
+routerAPI.get(
+  "/discount",
+  authenticateToken,
+  checkRole(["admin", "staff"]),
+  getAllDiscountAPI
+);
+routerAPI.post(
+  "/discount",
+  authenticateToken,
+  checkRole(["admin", "staff"]),
+  validateCreateDiscount,
+  postCreateDiscountAPI
+);
+routerAPI.put(
+  "/discount",
+  authenticateToken,
+  checkRole(["admin", "staff"]),
+  validateUpdateDiscount,
+  putUpdateDiscountAPI
+);
+routerAPI.delete(
+  "/discount/:id",
+  authenticateToken,
+  checkRole(["admin", "staff"]),
+  deleteDiscountAPI
 );
 module.exports = routerAPI; //export default

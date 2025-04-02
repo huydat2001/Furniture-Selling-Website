@@ -3,9 +3,11 @@ const validate = (schema) => (req, res, next) => {
   if (error) {
     const errorMessages = error.details.map((detail) => detail.message);
     return res.status(400).json({
-      statusCode: false,
-      message: errorMessages,
-      error: "Bad Request",
+      success: false,
+      error: {
+        error: "Bad Request",
+        message: errorMessages,
+      },
     });
   }
   next();
