@@ -32,9 +32,10 @@ app.use(
       return callback(new Error("Not allowed by CORS"));
     },
     methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    allowedHeaders: ["Content-Type", "Authorization", "folder"],
   })
 );
+// app.use("/api/upload", apiRoutes);
 app.use("/v1/api/", apiRoutes);
 (async () => {
   try {

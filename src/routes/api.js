@@ -39,8 +39,29 @@ const {
   validateCreateDiscount,
   validateUpdateDiscount,
 } = require("../middleware/schemas/discount.validate");
+const {
+  getAllBrandAPI,
+  postCreateBrandAPI,
+  putUpdateBrandAPI,
+  deleteBrandAPI,
+} = require("../controllers/admin/brand.controller");
+const {
+  validateCreateBrand,
+  validateUpdateBrand,
+} = require("../middleware/schemas/brand.validate");
+const upload = require("../middleware/upload.middleware");
+const {
+  postUploadSingleFileAPI,
+  postUploadMultipleFilesAPI,
+} = require("../controllers/upload.controller");
 const routerAPI = express.Router();
 
+routerAPI.post("/upload", upload.single("image"), postUploadSingleFileAPI);
+routerAPI.post(
+  "/uploadmultiple",
+  upload.array("images", 10),
+  postUploadMultipleFilesAPI
+);
 //api login
 routerAPI.post("/auth/login", login);
 routerAPI.post("/auth/refresh-token", refreshToken);
@@ -130,5 +151,34 @@ routerAPI.delete(
   authenticateToken,
   checkRole(["admin", "staff"]),
   deleteDiscountAPI
+);
+
+//api brand
+
+routerAPI.get(
+  "/brand",
+  authenticateToken,
+  checkRole(["admin", "staff"]),
+  getAllBrandAPI
+);
+routerAPI.post(
+  "/brand",
+  authenticateToken,
+  checkRole(["admin", "staff"]),
+  validateCreateBrand,
+  postCreateBrandAPI
+);
+routerAPI.put(
+  "/brand",
+  authenticateToken,
+  checkRole(["admin", "staff"]),
+  validateUpdateBrand,
+  putUpdateBrandAPI
+);
+routerAPI.delete(
+  "/brand/:id",
+  authenticateToken,
+  checkRole(["admin", "staff"]),
+  deleteBrandAPI
 );
 module.exports = routerAPI; //export default

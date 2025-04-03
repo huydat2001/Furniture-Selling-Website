@@ -15,10 +15,12 @@ const productSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    discount: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Discount", // Liên kết với schema Discount
-    },
+    discounts: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Discount", // Danh sách các Discount áp dụng cho sản phẩm
+      },
+    ],
     category: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Category",
