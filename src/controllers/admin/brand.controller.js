@@ -4,7 +4,6 @@ const {
   updateBrand,
   deleteBrand,
 } = require("../../services/admin/brand.service");
-const { postUploadSingleFileAPI } = require("../upload.controller");
 
 module.exports = {
   getAllBrandAPI: async (req, res) => {

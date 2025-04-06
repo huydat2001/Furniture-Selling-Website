@@ -44,7 +44,6 @@ module.exports = {
         role,
         status,
       } = req.body;
-      console.log("req.body :>> ", req.body);
       const finalAddress = {
         street: street ?? "", // Nếu street là undefined/null, gán ""
         city: city ?? "",
@@ -62,7 +61,6 @@ module.exports = {
         role,
         status,
       };
-      console.log("newUser :>> ", newUser);
       let result = await creatUser(newUser);
       if (!result) {
         throw new Error("Không thể tạo người dùng");

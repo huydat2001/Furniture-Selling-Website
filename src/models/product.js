@@ -1,4 +1,3 @@
-const { required } = require("joi");
 const mongoose = require("mongoose");
 const mongoose_delete = require("mongoose-delete");
 const productSchema = new mongoose.Schema(
@@ -6,6 +5,8 @@ const productSchema = new mongoose.Schema(
     name: {
       type: String,
       trim: true,
+      required: true,
+      unique: true,
     },
     description: {
       type: String,
@@ -19,6 +20,7 @@ const productSchema = new mongoose.Schema(
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Discount", // Danh sách các Discount áp dụng cho sản phẩm
+        default: [], // Mặc định là mảng rỗng nếu không có discount nào
       },
     ],
     category: {
@@ -33,8 +35,9 @@ const productSchema = new mongoose.Schema(
     },
     images: [
       {
-        url: {
+        name: {
           type: String,
+          trim: true,
         },
         public_id: {
           type: String,
@@ -89,11 +92,7 @@ const productSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
-    sku: {
-      type: String,
-      trim: true,
-      unique: true,
-    },
+
     isFeatured: {
       type: Boolean, // Sản phẩm nổi bật
       default: false,

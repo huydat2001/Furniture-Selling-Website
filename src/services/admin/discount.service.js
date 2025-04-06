@@ -1,6 +1,6 @@
 const aqp = require("api-query-params");
 const Discount = require("../../models/discount");
-const Product = require("../../models/Product"); // Import model Product
+
 module.exports = {
   getAllDiscount: async (page, limit, queryString) => {
     try {

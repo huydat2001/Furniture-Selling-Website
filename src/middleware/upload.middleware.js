@@ -41,4 +41,8 @@ const upload = multer({
   limits: { fileSize: 10 * 1024 * 1024 }, // Giới hạn kích thước file 5MB
 });
 
-module.exports = upload;
+// module.exports = upload;
+module.exports = {
+  uploadSingle: upload.single("image"), // Middleware cho upload 1 file
+  uploadMultiple: upload.array("images", 10), // Middleware cho upload nhiều file
+};

@@ -49,19 +49,28 @@ const {
   validateCreateBrand,
   validateUpdateBrand,
 } = require("../middleware/schemas/brand.validate");
-const upload = require("../middleware/upload.middleware");
 const {
   postUploadSingleFileAPI,
   postUploadMultipleFilesAPI,
 } = require("../controllers/upload.controller");
+const {
+  validateCreateProduct,
+  validateUpdateProduct,
+} = require("../middleware/schemas/product.validate");
+const {
+  getAllProductAPI,
+  postCreateProductAPI,
+  putUpdateProductAPI,
+  deleteProductAPI,
+} = require("../controllers/admin/product.controller");
+const {
+  uploadSingle,
+  uploadMultiple,
+} = require("../middleware/upload.middleware");
 const routerAPI = express.Router();
 
-routerAPI.post("/upload", upload.single("image"), postUploadSingleFileAPI);
-routerAPI.post(
-  "/uploadmultiple",
-  upload.array("images", 10),
-  postUploadMultipleFilesAPI
-);
+routerAPI.post("/upload", uploadSingle, postUploadSingleFileAPI);
+routerAPI.post("/uploadmultiple", uploadMultiple, postUploadMultipleFilesAPI);
 //api login
 routerAPI.post("/auth/login", login);
 routerAPI.post("/auth/refresh-token", refreshToken);
@@ -180,5 +189,34 @@ routerAPI.delete(
   authenticateToken,
   checkRole(["admin", "staff"]),
   deleteBrandAPI
+);
+
+//api product
+
+routerAPI.get(
+  "/product",
+  authenticateToken,
+  checkRole(["admin", "staff"]),
+  getAllProductAPI
+);
+routerAPI.post(
+  "/product",
+  authenticateToken,
+  checkRole(["admin", "staff"]),
+  validateCreateProduct,
+  postCreateProductAPI
+);
+routerAPI.put(
+  "/product",
+  authenticateToken,
+  checkRole(["admin", "staff"]),
+  validateUpdateProduct,
+  putUpdateProductAPI
+);
+routerAPI.delete(
+  "/product/:id",
+  authenticateToken,
+  checkRole(["admin", "staff"]),
+  deleteProductAPI
 );
 module.exports = routerAPI; //export default
