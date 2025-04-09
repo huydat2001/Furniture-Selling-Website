@@ -16,6 +16,10 @@ const createSchema = Joi.object({
     "number.min": "Giá phải lớn hơn hoặc bằng 0",
     "any.required": "Giá là trường bắt buộc",
   }),
+  decreases: Joi.number().min(0).messages({
+    "number.base": "Giảm giá phải là số",
+    "number.min": "Giảm giá phải lớn hơn hoặc bằng 0",
+  }),
 
   discounts: Joi.array()
     .items(Joi.string().trim())
@@ -132,8 +136,8 @@ const createSchema = Joi.object({
     "string.base": "Chất liệu phải là chuỗi",
   }),
 
-  color: Joi.string().trim().optional().allow("").messages({
-    "string.base": "Màu sắc phải là chuỗi",
+  color: Joi.array().optional().allow("").messages({
+    "string.base": "Màu sắc phải là mảng",
   }),
 
   isFeatured: Joi.boolean().default(false).optional().messages({
@@ -165,7 +169,10 @@ const updateSchema = Joi.object({
   price: Joi.number().required().min(0).messages({
     "number.base": "Giá phải là số",
     "number.min": "Giá phải lớn hơn hoặc bằng 0",
-    "any.required": "Giá là trường bắt buộc",
+  }),
+  decreases: Joi.number().min(0).messages({
+    "number.base": "Giảm giá phải là số",
+    "number.min": "Giảm giá lớn hơn hoặc bằng 0",
   }),
 
   discounts: Joi.array()
@@ -284,7 +291,7 @@ const updateSchema = Joi.object({
     "string.base": "Chất liệu phải là chuỗi",
   }),
 
-  color: Joi.string().trim().optional().allow("").messages({
+  color: Joi.array().optional().allow("").messages({
     "string.base": "Màu sắc phải là chuỗi",
   }),
 

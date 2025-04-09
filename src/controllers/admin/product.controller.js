@@ -3,7 +3,9 @@ const {
   createProduct,
   updateProduct,
   deleteProduct,
+  getProductByQuyery,
 } = require("../../services/admin/product.service");
+const aqp = require("api-query-params");
 
 module.exports = {
   getAllProductAPI: async (req, res) => {
@@ -29,43 +31,7 @@ module.exports = {
   },
   postCreateProductAPI: async (req, res) => {
     try {
-      const {
-        name,
-        description,
-        price,
-        discounts,
-        category,
-        stock,
-        images,
-        status,
-        brand,
-        length,
-        width,
-        height,
-        weight,
-        material,
-        color,
-        isFeatured,
-      } = req.body;
-      const data = {
-        name,
-        description,
-        price,
-        discounts,
-        category,
-        stock,
-        images,
-        status,
-        brand,
-        length,
-        width,
-        height,
-        weight,
-        material,
-        color,
-        isFeatured,
-      };
-      const result = await createProduct(data);
+      const result = await createProduct(req.body);
       if (!result) {
         throw new Error("Không thể tạo sản phẩm");
       }
@@ -87,45 +53,7 @@ module.exports = {
   },
   putUpdateProductAPI: async (req, res) => {
     try {
-      const {
-        id,
-        name,
-        description,
-        price,
-        discounts,
-        category,
-        stock,
-        images,
-        status,
-        brand,
-        length,
-        width,
-        height,
-        weight,
-        material,
-        color,
-        isFeatured,
-      } = req.body;
-      const updateData = {
-        id,
-        name,
-        description,
-        price,
-        discounts,
-        category,
-        stock,
-        images,
-        status,
-        brand,
-        length,
-        width,
-        height,
-        weight,
-        material,
-        color,
-        isFeatured,
-      };
-      const result = await updateProduct(updateData);
+      const result = await updateProduct(req.body);
       return res.status(200).json({
         data: {
           statusCode: true,
@@ -151,6 +79,27 @@ module.exports = {
         data: {
           statusCode: true,
           result: result,
+        },
+      });
+    } catch (error) {
+      return res.status(500).json({
+        success: false,
+        error: {
+          code: 500,
+          message: error.message,
+        },
+      });
+    }
+  },
+  getProductByQuyeryAPI: async (req, res) => {
+    try {
+      let { page, limit } = req.query;
+      const result = await getProductByQuyery(page, limit, req.query);
+      return res.status(200).json({
+        data: {
+          statusCode: true,
+          pagination: result.pagination,
+          result: result.result,
         },
       });
     } catch (error) {

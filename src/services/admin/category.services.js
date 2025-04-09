@@ -6,7 +6,7 @@ module.exports = {
     try {
       let categories = null;
       let totalCategories = null;
-      if (limit && page) {
+      if ((limit && page) || queryString) {
         let offset = (page - 1) * limit;
         const { filter } = aqp(queryString);
         delete filter.page;

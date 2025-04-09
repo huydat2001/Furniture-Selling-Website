@@ -62,6 +62,7 @@ const {
   postCreateProductAPI,
   putUpdateProductAPI,
   deleteProductAPI,
+  getProductByQuyeryAPI,
 } = require("../controllers/admin/product.controller");
 const {
   uploadSingle,
@@ -218,5 +219,12 @@ routerAPI.delete(
   authenticateToken,
   checkRole(["admin", "staff"]),
   deleteProductAPI
+);
+
+routerAPI.get(
+  "/user/product",
+  authenticateToken,
+  checkRole(["admin", "staff", "customer"]),
+  getProductByQuyeryAPI
 );
 module.exports = routerAPI; //export default

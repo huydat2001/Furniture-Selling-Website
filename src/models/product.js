@@ -16,6 +16,9 @@ const productSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    decreases: {
+      type: Number,
+    },
     discounts: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -88,10 +91,7 @@ const productSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
-    color: {
-      type: String,
-      trim: true,
-    },
+    color: [{ type: String }],
 
     isFeatured: {
       type: Boolean, // Sản phẩm nổi bật

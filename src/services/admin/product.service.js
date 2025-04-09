@@ -81,4 +81,77 @@ module.exports = {
       throw new Error(error.message);
     }
   },
+  getProductByQuyery: async (page, limit, queryString) => {
+    try {
+      let result = null;
+      let total = null;
+      let filter = { status: "active" };
+      delete filter.page;
+
+      if (queryString.search) {
+        // const normalizedSearch = queryString.search.normalize("NFC");
+        filter.$or = [
+          { name: { $regex: queryString.search, $options: "i" } },
+          { description: { $regex: queryString.search, $options: "i" } },
+        ];
+      }
+      // Xử lý lọc theo khoảng giá
+      if (queryString.minPrice || queryString.maxPrice) {
+        filter.price = {};
+
+        if (queryString.minPrice) {
+          filter.price.$gte = Number(queryString.minPrice);
+        }
+        if (queryString.maxPrice) {
+          filter.price.$lte = Number(queryString.maxPrice);
+        }
+      }
+      // Xử lý lọc theo đánh giá (cho sản phẩm gợi ý)
+      if (queryString.ratings) {
+        filter.ratings = Number(queryString.ratings);
+      }
+      // Xử lý sắp xếp
+      let sortOptions = {};
+      if (queryString.sortBy && queryString.order) {
+        sortOptions[queryString.sortBy] = queryString.order === "asc" ? 1 : -1;
+      } else {
+        sortOptions.createdAt = -1; // Mặc định sắp xếp theo createdAt giảm dần
+      }
+
+      // Xử lý populate
+      let populateFields = [];
+      if (queryString.populate) {
+        populateFields = queryString.populate.split(",");
+      }
+      console.log("filter :>> ", filter);
+      if (limit && page) {
+        let offset = (page - 1) * limit;
+        result = await Product.find(filter)
+          .sort(sortOptions)
+          .skip(offset)
+          .limit(limit)
+          .populate(populateFields)
+          .exec();
+        total = await Product.countDocuments(filter);
+      } else {
+        result = await Product.find(filter)
+          .sort(sortOptions)
+          .populate(populateFields)
+          .exec();
+        total = await Product.countDocuments(filter);
+      }
+
+      return {
+        result,
+        pagination: {
+          current_page: page,
+          limit: limit,
+          total_pages: limit > 0 ? Math.ceil(total / limit) : 1,
+          total: total,
+        },
+      };
+    } catch (error) {
+      throw new Error("Lỗi truy vấn dữ liệu: " + error.message);
+    }
+  },
 };

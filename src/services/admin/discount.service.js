@@ -6,9 +6,9 @@ module.exports = {
     try {
       let result = null;
       let total = null;
-      if (limit && page) {
+      if ((limit && page) || queryString) {
         let offset = (page - 1) * limit;
-        const { filter } = aqp(queryString);
+        let { filter } = aqp(queryString);
         delete filter.page;
         result = await Discount.find(filter)
           .skip(offset)
