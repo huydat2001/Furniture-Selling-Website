@@ -21,21 +21,45 @@ const cartSchema = new mongoose.Schema(
           min: 1,
           default: 1,
         },
+        selectedColor: {
+          type: String,
+          required: false,
+        },
       },
     ],
     totalAmount: {
       type: Number, // Tổng tiền của giỏ hàng
       default: 0,
     },
-    updatedAt: {
-      type: Date, // Thời gian cập nhật giỏ hàng
-      default: Date.now,
-    },
   },
   {
     timestamps: true,
   }
 );
+// Tự động tính totalAmount trước khi lưu
+cartSchema.pre("save", async function (next) {
+  try {
+    await this.populate({
+      path: "items.product",
+      select: "price discountedPrice",
+    });
+
+    // Lọc bỏ các sản phẩm không tồn tại
+    this.items = this.items.filter((item) => item.product);
+
+    this.totalAmount = this.items.reduce((total, item) => {
+      const productPrice = item.product.price || 0;
+      const discountedPrice = item.product.discountedPrice || productPrice;
+      const priceToUse =
+        discountedPrice < productPrice ? discountedPrice : productPrice;
+      return total + priceToUse * item.quantity;
+    }, 0);
+
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
 cartSchema.plugin(mongoose_delete, {
   deletedAt: true,
   overrideMethods: "all",

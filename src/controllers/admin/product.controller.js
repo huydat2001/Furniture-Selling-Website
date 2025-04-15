@@ -5,7 +5,6 @@ const {
   deleteProduct,
   getProductByQuyery,
 } = require("../../services/admin/product.service");
-const aqp = require("api-query-params");
 
 module.exports = {
   getAllProductAPI: async (req, res) => {

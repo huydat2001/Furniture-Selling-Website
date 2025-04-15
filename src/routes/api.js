@@ -68,6 +68,12 @@ const {
   uploadSingle,
   uploadMultiple,
 } = require("../middleware/upload.middleware");
+const {
+  getCartAPI,
+  addToCartAPI,
+  updateCartAPI,
+  removeFromCartAPI,
+} = require("../controllers/user/cart.controller");
 const routerAPI = express.Router();
 
 routerAPI.post("/upload", uploadSingle, postUploadSingleFileAPI);
@@ -110,7 +116,7 @@ routerAPI.delete(
 routerAPI.get(
   "/category",
   authenticateToken,
-  checkRole(["admin", "staff"]),
+  checkRole(["admin", "staff", "customer"]),
   getAllCategoriesAPI
 );
 routerAPI.post(
@@ -139,7 +145,7 @@ routerAPI.delete(
 routerAPI.get(
   "/discount",
   authenticateToken,
-  checkRole(["admin", "staff"]),
+  checkRole(["admin", "staff", "customer"]),
   getAllDiscountAPI
 );
 routerAPI.post(
@@ -226,5 +232,14 @@ routerAPI.get(
   authenticateToken,
   checkRole(["admin", "staff", "customer"]),
   getProductByQuyeryAPI
+);
+
+routerAPI.get("/cart", authenticateToken, getCartAPI);
+routerAPI.post("/cart/add", authenticateToken, addToCartAPI);
+routerAPI.put("/cart/update", authenticateToken, updateCartAPI);
+routerAPI.delete(
+  "/cart/remove/:productId",
+  authenticateToken,
+  removeFromCartAPI
 );
 module.exports = routerAPI; //export default

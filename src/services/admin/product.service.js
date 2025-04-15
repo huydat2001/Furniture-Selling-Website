@@ -87,7 +87,6 @@ module.exports = {
       let total = null;
       let filter = { status: "active" };
       delete filter.page;
-
       if (queryString.search) {
         // const normalizedSearch = queryString.search.normalize("NFC");
         filter.$or = [
@@ -110,6 +109,9 @@ module.exports = {
       if (queryString.ratings) {
         filter.ratings = Number(queryString.ratings);
       }
+      if (queryString.name) {
+        filter.name = queryString.name;
+      }
       // Xử lý sắp xếp
       let sortOptions = {};
       if (queryString.sortBy && queryString.order) {
@@ -123,7 +125,6 @@ module.exports = {
       if (queryString.populate) {
         populateFields = queryString.populate.split(",");
       }
-      console.log("filter :>> ", filter);
       if (limit && page) {
         let offset = (page - 1) * limit;
         result = await Product.find(filter)
