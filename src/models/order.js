@@ -40,7 +40,7 @@ const orderSchema = new mongoose.Schema(
     },
     paymentMethod: {
       type: String, // Phương thức thanh toán
-      enum: ["cod", "bank_card"], // Tiền mặt, thẻ, PayPal
+      enum: ["cod", "bank_card", "bank_account"], // Tiền mặt, thẻ, Tài khoản ngân hàng
       default: "cod",
     },
 
