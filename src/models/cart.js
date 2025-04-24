@@ -41,7 +41,7 @@ cartSchema.pre("save", async function (next) {
   try {
     await this.populate({
       path: "items.product",
-      select: "price discountedPrice",
+      select: "price decreases",
     });
 
     // Lọc bỏ các sản phẩm không tồn tại
@@ -49,9 +49,11 @@ cartSchema.pre("save", async function (next) {
 
     this.totalAmount = this.items.reduce((total, item) => {
       const productPrice = item.product.price || 0;
-      const discountedPrice = item.product.discountedPrice || productPrice;
+      const discountedPrice = item.product.decreases || 0;
       const priceToUse =
-        discountedPrice < productPrice ? discountedPrice : productPrice;
+        discountedPrice !== 0
+          ? productPrice - (productPrice * discountedPrice) / 100
+          : productPrice;
       return total + priceToUse * item.quantity;
     }, 0);
 

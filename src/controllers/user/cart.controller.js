@@ -3,6 +3,7 @@ const {
   addToCart,
   updateCart,
   removeFromCart,
+  removeAllCart,
 } = require("../../services/user/cart.service");
 
 module.exports = {
@@ -81,9 +82,28 @@ module.exports = {
     try {
       const userId = req.user.id;
       const productId = req.params.productId;
-      console.log("userId :>> ", userId);
-      console.log(", productId :>> ", productId);
       const result = await removeFromCart(userId, productId);
+      return res.status(200).json({
+        data: {
+          statusCode: true,
+          result: result,
+        },
+      });
+    } catch (error) {
+      return res.status(500).json({
+        success: false,
+        error: {
+          code: 500,
+          message: error.message,
+        },
+      });
+    }
+  },
+  removeAllCartAPI: async (req, res) => {
+    try {
+      const userId = req.user.id;
+
+      const result = await removeAllCart(userId);
       return res.status(200).json({
         data: {
           statusCode: true,

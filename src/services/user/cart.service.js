@@ -89,4 +89,15 @@ module.exports = {
       throw new Error("Lỗi khi xóa sản phẩm: " + error.message);
     }
   },
+  removeAllCart: async (userId) => {
+    try {
+      const cart = await Cart.findOne({ user: userId });
+      if (!cart) {
+        throw new Error("Giỏ hàng không tồn tại");
+      }
+
+      const result = await Cart.deleteMany({ _id: cart._id });
+      return result;
+    } catch (error) {}
+  },
 };

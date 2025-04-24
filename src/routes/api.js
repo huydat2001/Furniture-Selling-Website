@@ -73,7 +73,12 @@ const {
   addToCartAPI,
   updateCartAPI,
   removeFromCartAPI,
+  removeAllCartAPI,
 } = require("../controllers/user/cart.controller");
+const {
+  createPayment,
+  VNPayReturn,
+} = require("../controllers/user/vnpay.controller");
 const routerAPI = express.Router();
 
 routerAPI.post("/upload", uploadSingle, postUploadSingleFileAPI);
@@ -242,4 +247,7 @@ routerAPI.delete(
   authenticateToken,
   removeFromCartAPI
 );
+routerAPI.delete("/cart", authenticateToken, removeAllCartAPI);
+routerAPI.post("/create_payment_url", createPayment);
+routerAPI.get("/vnpay_return", VNPayReturn);
 module.exports = routerAPI; //export default
