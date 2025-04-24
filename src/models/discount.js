@@ -1,3 +1,4 @@
+const { number } = require("joi");
 const mongoose = require("mongoose");
 const mongoose_delete = require("mongoose-delete");
 
@@ -17,6 +18,10 @@ const discountSchema = new mongoose.Schema(
     value: {
       type: Number, // Giá trị giảm (ví dụ: 20 nếu là 20%, hoặc 50000 nếu là 50k)
       required: true,
+    },
+    maxDiscountAmount: {
+      type: Number,
+      default: null,
     },
     startDate: {
       type: Date, // Ngày bắt đầu áp dụng

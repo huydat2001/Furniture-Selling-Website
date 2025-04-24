@@ -29,29 +29,7 @@ module.exports = {
   },
   postCreateDiscountAPI: async (req, res) => {
     try {
-      const {
-        code,
-        type,
-        value,
-        startDate,
-        endDate,
-        maxUses,
-        minOrderValue,
-        applicableProducts,
-        status,
-      } = req.body;
-      const data = {
-        code,
-        type,
-        value,
-        startDate,
-        endDate,
-        maxUses,
-        minOrderValue,
-        applicableProducts,
-        status,
-      };
-      const result = await createDiscount(data);
+      const result = await createDiscount(req.body);
       if (!result) {
         throw new Error("Không thể tạo mã giảm giá");
       }
@@ -83,33 +61,7 @@ module.exports = {
   },
   putUpdateDiscountAPI: async (req, res) => {
     try {
-      const {
-        id,
-        code,
-        type,
-        value,
-        startDate,
-        endDate,
-        maxUses,
-        minOrderValue,
-        applicableProducts,
-        status,
-        isApplicableToAll,
-      } = req.body;
-      const updateData = {
-        id,
-        code,
-        type,
-        value,
-        startDate,
-        endDate,
-        maxUses,
-        minOrderValue,
-        applicableProducts,
-        status,
-        isApplicableToAll,
-      };
-      const result = await updateDiscount(updateData);
+      const result = await updateDiscount(req.body);
       return res.status(200).json({
         data: {
           statusCode: true,

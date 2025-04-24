@@ -21,7 +21,11 @@ const createDiscountSchema = Joi.object({
     "number.base": "Giá trị giảm giá phải là số",
     "number.min": "Giá trị giảm giá phải lớn hơn hoặc bằng 0",
   }),
-
+  maxDiscountAmount: Joi.number().required().min(0).messages({
+    "any.required": "Giá trị là bắt buộc",
+    "number.base": "Giá trị giảm giá phải là số",
+    "number.min": "Giá trị giảm giá phải lớn hơn hoặc bằng 0",
+  }),
   startDate: Joi.date().default(Date.now).messages({
     "date.base": "Ngày bắt đầu phải là định dạng ngày hợp lệ",
   }),
@@ -79,11 +83,18 @@ const updateDiscountSchema = Joi.object({
       "any.only": "Kiểu giảm giá phải là 'percentage' hoặc 'fixed'",
     }),
 
-  value: Joi.number().optional().min(0).messages({
+  value: Joi.number().default(null).min(0).messages({
     "number.base": "Giá trị giảm giá phải là số",
     "number.min": "Giá trị giảm giá phải lớn hơn hoặc bằng 0",
   }),
-
+  maxDiscountAmount: Joi.number()
+    .allow(null) // chấp nhận null
+    .empty("") // chấp nhận "" (nếu form gửi chuỗi rỗng)
+    .min(0)
+    .messages({
+      "number.base": "Giá trị phải là số hoặc để trống",
+      "number.min": "Giá trị giảm giá phải ≥ 0",
+    }),
   startDate: Joi.date().default(Date.now).messages({
     "date.base": "Ngày bắt đầu phải là định dạng ngày hợp lệ",
   }),

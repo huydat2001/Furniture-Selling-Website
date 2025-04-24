@@ -13,7 +13,11 @@ module.exports = {
         result = await Discount.find(filter)
           .skip(offset)
           .limit(limit)
-          .populate("applicableProducts")
+          .populate({
+            path: "applicableProducts",
+            select: "name",
+          })
+          .populate("applicableProducts", "name")
           .exec();
         total = await Discount.countDocuments(filter);
       } else {
@@ -81,6 +85,7 @@ module.exports = {
         applicableProducts: data.applicableProducts,
         status: data.status,
         isApplicableToAll: data.isApplicableToAll,
+        maxDiscountAmount: data.maxDiscountAmount,
       };
       Object.keys(updateData).forEach(
         (key) => updateData[key] === undefined && delete updateData[key]
