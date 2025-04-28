@@ -51,8 +51,16 @@ module.exports = {
           throw new Error("Mã giảm giá đã tồn tại");
         }
       }
-
-      const result = await Discount.create(data);
+      // Xử lý maxUses trước khi tạo mới
+      const createData = {
+        ...data,
+        maxUses:
+          data.maxUses === undefined || data.maxUses === null
+            ? Number.MAX_SAFE_INTEGER
+            : data.maxUses,
+      };
+      console.log("Create Data:", createData);
+      const result = await Discount.create(createData);
       return result;
     } catch (error) {
       throw new Error(error.message);
@@ -79,14 +87,19 @@ module.exports = {
         type: data.type,
         value: data.value,
         startDate: data.startDate,
-        endDate: data.endDate === null ? null : data.endDate, // Đặt null nếu endDate là null
-        maxUses: data.maxUses,
+        endDate: data.endDate === null ? null : data.endDate,
+        maxUses:
+          data.maxUses === undefined || data.maxUses === null
+            ? Number.MAX_SAFE_INTEGER
+            : data.maxUses,
         minOrderValue: data.minOrderValue,
         applicableProducts: data.applicableProducts,
         status: data.status,
         isApplicableToAll: data.isApplicableToAll,
         maxDiscountAmount: data.maxDiscountAmount,
+        usedCount: data.usedCount, // Đảm bảo usedCount được cập nhật nếu có
       };
+      // Xóa các trường undefined khỏi updateData, nhưng maxUses đã được xử lý ở trên
       Object.keys(updateData).forEach(
         (key) => updateData[key] === undefined && delete updateData[key]
       );

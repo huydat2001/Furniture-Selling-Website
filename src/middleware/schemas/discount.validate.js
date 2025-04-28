@@ -21,11 +21,14 @@ const createDiscountSchema = Joi.object({
     "number.base": "Giá trị giảm giá phải là số",
     "number.min": "Giá trị giảm giá phải lớn hơn hoặc bằng 0",
   }),
-  maxDiscountAmount: Joi.number().required().min(0).messages({
-    "any.required": "Giá trị là bắt buộc",
-    "number.base": "Giá trị giảm giá phải là số",
-    "number.min": "Giá trị giảm giá phải lớn hơn hoặc bằng 0",
-  }),
+  maxDiscountAmount: Joi.number()
+    .allow(null) // chấp nhận null
+    .empty("") // chấp nhận "" (nếu form gửi chuỗi rỗng)
+    .min(0)
+    .messages({
+      "number.base": "Giá trị phải là số hoặc để trống",
+      "number.min": "Giá trị giảm giá phải ≥ 0",
+    }),
   startDate: Joi.date().default(Date.now).messages({
     "date.base": "Ngày bắt đầu phải là định dạng ngày hợp lệ",
   }),
@@ -39,9 +42,13 @@ const createDiscountSchema = Joi.object({
       "date.greater": "Ngày kết thúc phải sau ngày bắt đầu",
     }),
 
-  maxUses: Joi.number().empty("").default(Infinity).messages({
+  maxUses: Joi.number().empty("").messages({
     "number.base": "Số lần sử dụng tối đa phải là số",
     "number.min": "Số lần sử dụng tối đa phải lớn hơn hoặc bằng 1",
+  }),
+  usedCount: Joi.number().empty("").messages({
+    "number.base": "Số lần đã sử dụng tối đa phải là số",
+    "number.min": "Số lần đã sử dụng tối đa phải lớn hơn hoặc bằng 1",
   }),
 
   minOrderValue: Joi.number().optional().min(0).default(0).messages({
@@ -108,11 +115,14 @@ const updateDiscountSchema = Joi.object({
       "date.greater": "Ngày kết thúc phải sau ngày bắt đầu",
     }),
 
-  maxUses: Joi.number().empty("").default(Infinity).messages({
+  maxUses: Joi.number().empty("").messages({
     "number.base": "Số lần sử dụng tối đa phải là số",
     "number.min": "Số lần sử dụng tối đa phải lớn hơn hoặc bằng 1",
   }),
-
+  usedCount: Joi.number().empty("").messages({
+    "number.base": "Số lần đã sử dụng tối đa phải là số",
+    "number.min": "Số lần đã sử dụng tối đa phải lớn hơn hoặc bằng 1",
+  }),
   minOrderValue: Joi.number().optional().min(0).default(0).messages({
     "number.base": "Giá trị đơn hàng tối thiểu phải là số",
     "number.min": "Giá trị đơn hàng tối thiểu phải lớn hơn hoặc bằng 0",

@@ -33,7 +33,7 @@ const discountSchema = new mongoose.Schema(
     },
     maxUses: {
       type: Number, // Số lần sử dụng tối đa
-      default: Infinity,
+      default: Number.MAX_SAFE_INTEGER,
     },
     usedCount: {
       type: Number, // Số lần đã sử dụng
