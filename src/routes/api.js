@@ -79,6 +79,16 @@ const {
   createPayment,
   VNPayReturn,
 } = require("../controllers/user/vnpay.controller");
+const {
+  getOrderAPI,
+  postCreateOrderAPI,
+  putUpdateOrderAPI,
+  deleteOrderAPI,
+} = require("../controllers/admin/order.controller");
+const {
+  validateCreateOrder,
+  validateUpdateOrder,
+} = require("../middleware/schemas/order.validate");
 const routerAPI = express.Router();
 
 routerAPI.post("/upload", uploadSingle, postUploadSingleFileAPI);
@@ -238,7 +248,7 @@ routerAPI.get(
   checkRole(["admin", "staff", "customer"]),
   getProductByQuyeryAPI
 );
-
+//cart
 routerAPI.get("/cart", authenticateToken, getCartAPI);
 routerAPI.post("/cart/add", authenticateToken, addToCartAPI);
 routerAPI.put("/cart/update", authenticateToken, updateCartAPI);
@@ -248,6 +258,43 @@ routerAPI.delete(
   removeFromCartAPI
 );
 routerAPI.delete("/cart", authenticateToken, removeAllCartAPI);
+
+// vnpay
+
 routerAPI.post("/create_payment_url", createPayment);
 routerAPI.get("/vnpay_return", VNPayReturn);
+
+//order
+routerAPI.get(
+  "/order",
+  authenticateToken,
+  checkRole(["admin", "staff"]),
+  getOrderAPI
+);
+routerAPI.post(
+  "/order",
+  authenticateToken,
+  checkRole(["admin", "staff", "customer"]),
+  validateCreateOrder,
+  postCreateOrderAPI
+);
+routerAPI.put(
+  "/order",
+  authenticateToken,
+  checkRole(["admin", "staff", "customer"]),
+  validateUpdateOrder,
+  putUpdateOrderAPI
+);
+routerAPI.delete(
+  "/order/:id",
+  authenticateToken,
+  checkRole(["admin", "staff", "customer"]),
+  deleteOrderAPI
+);
+routerAPI.post(
+  "/order/cancel",
+  authenticateToken,
+  checkRole(["admin", "staff", "customer"]),
+  deleteOrderAPI
+);
 module.exports = routerAPI; //export default

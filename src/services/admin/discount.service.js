@@ -17,7 +17,7 @@ module.exports = {
             path: "applicableProducts",
             select: "name",
           })
-          .populate("applicableProducts", "name")
+
           .exec();
         total = await Discount.countDocuments(filter);
       } else {

@@ -7,7 +7,11 @@ const orderSchema = new mongoose.Schema(
       ref: "Account", // Liên kết với tài khoản người dùng
       required: true,
     },
-
+    displayCode: {
+      type: String,
+      unique: true,
+      required: true,
+    },
     products: [
       {
         product: {
@@ -40,7 +44,7 @@ const orderSchema = new mongoose.Schema(
     },
     paymentMethod: {
       type: String, // Phương thức thanh toán
-      enum: ["cod", "bank_card", "bank_account"], // Tiền mặt, thẻ, Tài khoản ngân hàng
+      enum: ["cod", "vnpay", "bank_account"], // Tiền mặt, thẻ, Tài khoản ngân hàng
       default: "cod",
     },
 
@@ -48,10 +52,6 @@ const orderSchema = new mongoose.Schema(
       type: String,
       enum: ["pending", "processing", "shipped", "delivered", "cancelled"],
       default: "pending",
-    },
-    orderDate: {
-      type: Date,
-      default: Date.now,
     },
   },
   {

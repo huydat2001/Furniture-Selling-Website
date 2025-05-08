@@ -74,7 +74,7 @@ module.exports = {
     try {
       let result = await Product.deleteById({ _id: id });
       if (!result || result.deletedCount === 0) {
-        throw new Error("Nhãn hàng không tồn tại hoặc đã bị xóa trước đó");
+        throw new Error("Sản phẩm không tồn tại hoặc đã bị xóa trước đó");
       }
       return result;
     } catch (error) {
