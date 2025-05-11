@@ -3,14 +3,12 @@ const {
   createOrder,
   deleteOrder,
   updateOrder,
-  cancelOrder,
 } = require("../../services/admin/order.service");
 
 module.exports = {
   getOrderAPI: async (req, res) => {
     try {
       let { page, limit } = req.query;
-
       const result = await getOrder(page, limit, req.query);
       return res.status(200).json({
         data: {
@@ -91,24 +89,24 @@ module.exports = {
       });
     }
   },
-  cancelOrderAPI: async (req, res) => {
-    try {
-      const { orderId } = req.body;
-      const result = await cancelOrder(orderId);
-      return res.status(200).json({
-        data: {
-          statusCode: true,
-          result: result,
-        },
-      });
-    } catch (error) {
-      return res.status(500).json({
-        success: false,
-        error: {
-          code: 500,
-          message: error.message,
-        },
-      });
-    }
-  },
+  // cancelOrderAPI: async (req, res) => {
+  //   try {
+  //     const { orderId } = req.body;
+  //     const result = await cancelOrder(orderId);
+  //     return res.status(200).json({
+  //       data: {
+  //         statusCode: true,
+  //         result: result,
+  //       },
+  //     });
+  //   } catch (error) {
+  //     return res.status(500).json({
+  //       success: false,
+  //       error: {
+  //         code: 500,
+  //         message: error.message,
+  //       },
+  //     });
+  //   }
+  // },
 };

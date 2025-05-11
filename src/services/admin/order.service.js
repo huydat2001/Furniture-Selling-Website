@@ -17,14 +17,14 @@ module.exports = {
           .limit(limit)
           .populate([
             { path: "user", select: "_id username" },
-            { path: "products.product", select: "_id name" },
+            { path: "products.product", select: "_id name images" },
           ])
           .exec();
         total = await Order.countDocuments(filter);
       } else {
         result = await Order.find({}).populate([
           { path: "user", select: "_id" },
-          { path: "products.product", select: "_id name" },
+          { path: "products.product", select: "_id name images" },
         ]);
       }
       return {
