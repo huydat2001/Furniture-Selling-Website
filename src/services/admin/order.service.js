@@ -4,17 +4,107 @@ const Product = require("../../models/product");
 
 const aqp = require("api-query-params");
 module.exports = {
+  // getOrder: async (page, limit, queryString) => {
+  //   try {
+  //     let result = null;
+  //     let total = null;
+  //     if ((limit && page) || queryString) {
+  //       let offset = (page - 1) * limit;
+  //       let { filter, sort } = aqp(queryString);
+  //       delete filter.page;
+  //       delete filter.limit;
+  //       delete filter.sortBy;
+  //       delete filter.order;
+
+  //       result = await Order.find(filter)
+  //         .sort(sort)
+  //         .skip(offset)
+  //         .limit(limit)
+  //         .populate([
+  //           { path: "user", select: "_id username" },
+  //           { path: "products.product", select: "_id name images" },
+  //         ])
+  //         .exec();
+  //       total = await Order.countDocuments(filter);
+  //     } else {
+  //       result = await Order.find(filter)
+  //         .sort(sort)
+  //         .populate([
+  //           { path: "user", select: "_id" },
+  //           { path: "products.product", select: "_id name images" },
+  //         ]);
+  //     }
+  //     return {
+  //       result,
+  //       pagination: {
+  //         current_page: page,
+  //         limit: limit,
+  //         total_pages: limit > 0 ? Math.ceil(total / limit) : 1,
+  //         total: total,
+  //       },
+  //     };
+  //   } catch (error) {
+  //     throw new Error("Lỗi truy vấn dữ liệu: " + error.message);
+  //   }
+  // },
   getOrder: async (page, limit, queryString) => {
     try {
       let result = null;
       let total = null;
-      if ((limit && page) || queryString) {
-        let offset = (page - 1) * limit;
-        let { filter } = aqp(queryString);
-        delete filter.page;
+
+      // Ép kiểu page và limit
+      const pageNum = parseInt(page, 10) || 1;
+      const limitNum = parseInt(limit, 10) || 10;
+
+      // Phân tích queryString
+      let { filter } = aqp(queryString || {});
+      delete filter.page;
+      delete filter.limit;
+      delete filter.sortBy;
+      delete filter.order;
+      delete filter.period;
+      // Xử lý lọc theo thời gian (period)
+      if (queryString.period) {
+        const now = new Date();
+        switch (queryString.period) {
+          case "day":
+            filter.createdAt = {
+              $gte: new Date(now.setHours(0, 0, 0, 0)),
+
+              $lte: new Date(now.setHours(23, 59, 59, 999)),
+            };
+            break;
+          case "month":
+            filter.createdAt = {
+              $gte: new Date(now.getFullYear(), now.getMonth(), 1),
+
+              $lte: new Date(now.getFullYear(), now.getMonth() + 1, 0),
+            };
+            break;
+          case "year":
+            filter.createdAt = {
+              $gte: new Date(now.getFullYear(), 0, 1),
+
+              $lte: new Date(now.getFullYear(), 11, 31),
+            };
+            break;
+        }
+      }
+      // Tạo sort thủ công từ sortBy và order
+      let sortOption = {};
+      if (queryString.sortBy && queryString.order) {
+        const sortOrder = queryString.order === "desc" ? -1 : 1;
+        sortOption[queryString.sortBy] = sortOrder;
+      } else {
+        // Mặc định sắp xếp theo createdAt giảm dần
+        sortOption = { createdAt: -1 };
+      }
+      if ((limitNum && pageNum) || queryString) {
+        const offset = (pageNum - 1) * limitNum;
         result = await Order.find(filter)
+          .sort(sortOption) // Sử dụng sortOption thủ công
           .skip(offset)
-          .limit(limit)
+          .limit(limitNum)
           .populate([
             { path: "user", select: "_id username" },
             { path: "products.product", select: "_id name images" },
@@ -22,25 +112,30 @@ module.exports = {
           .exec();
         total = await Order.countDocuments(filter);
       } else {
-        result = await Order.find({}).populate([
-          { path: "user", select: "_id" },
-          { path: "products.product", select: "_id name images" },
-        ]);
+        result = await Order.find(filter)
+          .sort(sortOption) // Sử dụng sortOption thủ công
+          .populate([
+            { path: "user", select: "_id" },
+            { path: "products.product", select: "_id name images" },
+          ])
+          .exec();
+        total = await Order.countDocuments(filter);
       }
+
       return {
         result,
         pagination: {
-          current_page: page,
-          limit: limit,
-          total_pages: limit > 0 ? Math.ceil(total / limit) : 1,
-          total: total,
+          current_page: pageNum,
+          limit: limitNum,
+          total_pages: limitNum > 0 ? Math.ceil(total / limitNum) : 1,
+          total,
         },
       };
     } catch (error) {
+      console.error("getOrder error:", error);
       throw new Error("Lỗi truy vấn dữ liệu: " + error.message);
     }
   },
-
   createOrder: async (data) => {
     try {
       const displayCode = `ORD-${shortid.generate()}`;
@@ -54,59 +149,7 @@ module.exports = {
       throw new Error(error.message || "Lỗi khi tạo đơn hàng.");
     }
   },
-  // cancelOrder: async (orderId) => {
-  //   try {
-  //     const order = await Order.findById(orderId).populate("products.product");
-  //     if (!order) {
-  //       throw new Error("Đơn hàng không tồn tại.");
-  //     }
-  //     if (order.status === "cancelled") {
-  //       throw new Error("Đơn hàng đã bị hủy trước đó.");
-  //     }
-  //     if (order.status !== "pending" && order.status !== "processing") {
-  //       throw new Error(
-  //         "Chỉ có thể hủy đơn hàng ở trạng thái pending hoặc processing."
-  //       );
-  //     }
 
-  //     // Khôi phục stock và sold
-  //     for (const item of order.products) {
-  //       const product = await Product.findById(item.product._id);
-  //       if (!product) {
-  //         throw new Error(`Sản phẩm với ID ${item.product._id} không tồn tại.`);
-  //       }
-  //       product.stock += item.quantity;
-  //       product.sold -= item.quantity;
-  //       await product.save();
-  //     }
-
-  //     // Cập nhật trạng thái đơn hàng thành cancelled
-  //     order.status = "cancelled";
-  //     await order.save();
-
-  //     return await Order.findById(orderId)
-  //       .populate([
-  //         { path: "user", select: "_id username" },
-  //         { path: "products.product", select: "_id name" },
-  //       ])
-  //       .exec();
-  //   } catch (error) {
-  //     console.error("Lỗi trong cancelOrder:", error);
-  //     throw new Error(error.message || "Lỗi khi hủy đơn hàng.");
-  //   }
-  // },
-  // updateOrder: async (data) => {
-  //   try {
-  //     let checkOrder = await Order.findById(data.id);
-  //     if (!checkOrder) {
-  //       throw new Error("Không tồn tại ID");
-  //     }
-  //     let result = await Order.updateOne({ _id: data.id }, data);
-  //     return result;
-  //   } catch (error) {
-  //     throw new Error(error.message);
-  //   }
-  // },
   updateOrder: async (data) => {
     try {
       const order = await Order.findById(data.id).populate("products.product");

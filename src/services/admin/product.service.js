@@ -1,5 +1,6 @@
 const aqp = require("api-query-params");
 const Product = require("../../models/product");
+const Order = require("../../models/order");
 module.exports = {
   getAllProduct: async (page, limit, queryString) => {
     try {
@@ -85,19 +86,21 @@ module.exports = {
     try {
       let result = null;
       let total = null;
+
+      // Lọc cơ bản
       let filter = { status: "active" };
-      delete filter.page;
+
+      // Xử lý tìm kiếm
       if (queryString.search) {
-        // const normalizedSearch = queryString.search.normalize("NFC");
         filter.$or = [
           { name: { $regex: queryString.search, $options: "i" } },
           { description: { $regex: queryString.search, $options: "i" } },
         ];
       }
+
       // Xử lý lọc theo khoảng giá
       if (queryString.minPrice || queryString.maxPrice) {
         filter.price = {};
-
         if (queryString.minPrice) {
           filter.price.$gte = Number(queryString.minPrice);
         }
@@ -105,19 +108,115 @@ module.exports = {
           filter.price.$lte = Number(queryString.maxPrice);
         }
       }
-      // Xử lý lọc theo đánh giá (cho sản phẩm gợi ý)
+
+      // Xử lý lọc theo đánh giá
       if (queryString.ratings) {
         filter.ratings = Number(queryString.ratings);
       }
+
       if (queryString.name) {
         filter.name = queryString.name;
       }
+
+      // Tính toán sold dựa trên đơn hàng trong period
+      let productSoldMap = {};
+      if (queryString.period) {
+        const now = new Date();
+        let orderFilter = { status: "delivered" }; // Chỉ lấy đơn hàng đã giao
+        let startDate, endDate;
+
+        switch (queryString.period) {
+          case "day":
+            startDate = new Date(
+              now.getFullYear(),
+              now.getMonth(),
+              now.getDate(),
+              0,
+              0,
+              0,
+              0
+            );
+            endDate = new Date(
+              now.getFullYear(),
+              now.getMonth(),
+              now.getDate(),
+              23,
+              59,
+              59,
+              999
+            );
+            break;
+          case "month":
+            startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+            endDate = new Date(
+              now.getFullYear(),
+              now.getMonth() + 1,
+              0,
+              23,
+              59,
+              59,
+              999
+            );
+            break;
+          case "year":
+            startDate = new Date(now.getFullYear(), 0, 1);
+            endDate = new Date(now.getFullYear(), 11, 31, 23, 59, 59, 999);
+            break;
+          default:
+            startDate = new Date(0); // Từ thời điểm 0
+            endDate = new Date(); // Đến hiện tại
+        }
+
+        orderFilter.createdAt = {
+          $gte: startDate,
+          $lte: endDate,
+        };
+
+        // Log khoảng thời gian để kiểm tra
+
+        // Lấy danh sách đơn hàng trong khoảng thời gian và tính sold
+        const orders = await Order.find(orderFilter).populate(
+          "products.product"
+        );
+
+        orders.forEach((order) => {
+          order.products.forEach((item) => {
+            const productId = item.product?._id?.toString();
+            if (productId) {
+              productSoldMap[productId] =
+                (productSoldMap[productId] || 0) + item.quantity;
+            }
+          });
+        });
+
+        // Lọc các sản phẩm có trong danh sách sold
+        if (Object.keys(productSoldMap).length > 0) {
+          filter._id = { $in: Object.keys(productSoldMap) };
+        } else {
+          // Nếu không có đơn hàng nào, trả về danh sách rỗng
+          return {
+            result: [],
+            pagination: {
+              current_page: page,
+              limit: limit,
+              total_pages: 0,
+              total: 0,
+            },
+          };
+        }
+      }
+
       // Xử lý sắp xếp
       let sortOptions = {};
       if (queryString.sortBy && queryString.order) {
-        sortOptions[queryString.sortBy] = queryString.order === "asc" ? 1 : -1;
+        if (queryString.sortBy === "sold" && queryString.period) {
+          sortOptions = null; // Sắp xếp thủ công
+        } else {
+          sortOptions[queryString.sortBy] =
+            queryString.order === "asc" ? 1 : -1;
+        }
       } else {
-        sortOptions.createdAt = -1; // Mặc định sắp xếp theo createdAt giảm dần
+        sortOptions.createdAt = -1;
       }
 
       // Xử lý populate
@@ -125,15 +224,38 @@ module.exports = {
       if (queryString.populate) {
         populateFields = queryString.populate.split(",");
       }
+
       if (limit && page) {
         let offset = (page - 1) * limit;
-        result = await Product.find(filter)
-          .sort(sortOptions)
-          .skip(offset)
-          .limit(limit)
+        // Lấy tất cả sản phẩm khớp filter trước
+        let products = await Product.find(filter)
           .populate(populateFields)
           .exec();
-        total = await Product.countDocuments(filter);
+        total = products.length;
+
+        // Nếu sắp xếp theo sold và có period, sắp xếp thủ công
+        if (queryString.sortBy === "sold" && queryString.period) {
+          result = products
+            .map((product) => ({
+              ...product.toObject(),
+              soldInPeriod: productSoldMap[product._id.toString()] || 0,
+            }))
+            .sort((a, b) => {
+              return queryString.order === "asc"
+                ? a.soldInPeriod - b.soldInPeriod
+                : b.soldInPeriod - a.soldInPeriod; // Sửa lỗi sắp xếp
+            });
+
+          // Áp dụng phân trang
+          result = result.slice(offset, offset + parseInt(limit));
+        } else {
+          result = await Product.find(filter)
+            .sort(sortOptions)
+            .skip(offset)
+            .limit(limit)
+            .populate(populateFields)
+            .exec();
+        }
       } else {
         result = await Product.find(filter)
           .sort(sortOptions)

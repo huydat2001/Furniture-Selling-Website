@@ -89,6 +89,16 @@ const {
   validateCreateOrder,
   validateUpdateOrder,
 } = require("../middleware/schemas/order.validate");
+const {
+  getTotalMountAPI,
+  getTotalOrderAPI,
+  getCancellationRateAPI,
+  getTotalSoldProductsAPI,
+  getProcessingOrdersAPI,
+  getCurrentCustomersAPI,
+  getRevenueByPeriodAPI,
+  getOrderCountByStatusAPI,
+} = require("../controllers/admin/analytics.controller");
 const routerAPI = express.Router();
 
 routerAPI.post("/upload", uploadSingle, postUploadSingleFileAPI);
@@ -296,5 +306,56 @@ routerAPI.post(
   authenticateToken,
   checkRole(["admin", "staff", "customer"]),
   deleteOrderAPI
+);
+routerAPI.get(
+  "/analytics/total-revenue",
+  authenticateToken,
+  checkRole(["admin", "staff"]),
+  getTotalMountAPI
+);
+routerAPI.get(
+  "/analytics/total-order",
+  authenticateToken,
+  checkRole(["admin", "staff"]),
+  getTotalOrderAPI
+);
+routerAPI.get(
+  "/analytics/cancellation-rate",
+  authenticateToken,
+  checkRole(["admin", "staff"]),
+  getCancellationRateAPI
+);
+routerAPI.get(
+  "/analytics/total-sold-products",
+  authenticateToken,
+  checkRole(["admin", "staff"]),
+  getTotalSoldProductsAPI
+);
+
+routerAPI.get(
+  "/analytics/processing-orders",
+  authenticateToken,
+  checkRole(["admin", "staff"]),
+  getProcessingOrdersAPI
+);
+
+routerAPI.get(
+  "/analytics/current-customers",
+  authenticateToken,
+  checkRole(["admin", "staff"]),
+  getCurrentCustomersAPI
+);
+routerAPI.get(
+  "/analytics/revenue-by-period",
+  authenticateToken,
+  checkRole(["admin", "staff"]),
+  getRevenueByPeriodAPI
+);
+
+routerAPI.get(
+  "/analytics/order-by-status",
+  authenticateToken,
+  checkRole(["admin", "staff"]),
+  getOrderCountByStatusAPI
 );
 module.exports = routerAPI; //export default
