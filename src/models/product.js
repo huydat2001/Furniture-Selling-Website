@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const mongoose_delete = require("mongoose-delete");
+
 const productSchema = new mongoose.Schema(
   {
     name: {
@@ -22,8 +23,8 @@ const productSchema = new mongoose.Schema(
     discounts: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Discount", // Danh sách các Discount áp dụng cho sản phẩm
-        default: [], // Mặc định là mảng rỗng nếu không có discount nào
+        ref: "Discount",
+        default: [],
       },
     ],
     category: {
@@ -60,23 +61,14 @@ const productSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
-    reviews: [
+    totalReviews: {
+      type: Number,
+      default: 0, // Tổng số bình luận active
+    },
+    comments: [
       {
-        user: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "Account",
-        },
-        rating: {
-          type: Number,
-        },
-        comment: {
-          type: String,
-          trim: true,
-        },
-        createdAt: {
-          type: Date,
-          default: Date.now,
-        },
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Comment",
       },
     ],
     dimensions: {
@@ -94,21 +86,23 @@ const productSchema = new mongoose.Schema(
     color: [{ type: String }],
 
     isFeatured: {
-      type: Boolean, // Sản phẩm nổi bật
+      type: Boolean,
       default: false,
     },
     sold: {
-      type: Number, // Số lượng đã bán
-      default: 0, // Mặc định là 0
+      type: Number,
+      default: 0,
     },
   },
   {
-    timestamps: true, // Tự động cập nhật createdAt và updatedAt
+    timestamps: true,
   }
 );
+
 productSchema.plugin(mongoose_delete, {
   deletedAt: true,
   overrideMethods: "all",
 });
+
 const Product = mongoose.model("Product", productSchema);
 module.exports = Product;

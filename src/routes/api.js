@@ -99,6 +99,14 @@ const {
   getRevenueByPeriodAPI,
   getOrderCountByStatusAPI,
 } = require("../controllers/admin/analytics.controller");
+const {
+  createCommentAPI,
+  getCommentAPI,
+  getCommentsByProductAPI,
+} = require("../controllers/user/comment.controller");
+const {
+  validateCreateComment,
+} = require("../middleware/schemas/comment.validate");
 const routerAPI = express.Router();
 
 routerAPI.post("/upload", uploadSingle, postUploadSingleFileAPI);
@@ -357,5 +365,18 @@ routerAPI.get(
   authenticateToken,
   checkRole(["admin", "staff"]),
   getOrderCountByStatusAPI
+);
+routerAPI.post(
+  "/comments",
+  authenticateToken,
+  checkRole(["admin", "staff, customer"]),
+  validateCreateComment,
+  createCommentAPI
+);
+routerAPI.get(
+  "/comments",
+  authenticateToken,
+  checkRole(["admin", "staff, customer"]),
+  getCommentsByProductAPI
 );
 module.exports = routerAPI; //export default
