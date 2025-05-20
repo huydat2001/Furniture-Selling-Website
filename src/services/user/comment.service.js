@@ -76,4 +76,63 @@ module.exports = {
       throw new Error("Lỗi truy vấn dữ liệu: " + error.message);
     }
   },
+  deleteComment: async (userId, commentId, isAdmin = false) => {
+    try {
+      // Tìm comment
+      const comment = await Comment.findById(commentId).populate("userId");
+      if (!comment) {
+        const error = new Error("Bình luận không tồn tại");
+        error.statusCode = 404;
+        throw error;
+      }
+
+      // Kiểm tra quyền xóa
+      if (!isAdmin && comment.userId._id.toString() !== userId) {
+        const error = new Error("Bạn không có quyền xóa bình luận này");
+        error.statusCode = 403;
+        throw error;
+      }
+
+      const product = await Product.findById(comment.productId);
+      if (!product) {
+        const error = new Error("Sản phẩm không tồn tại");
+        error.statusCode = 404;
+        throw error;
+      }
+
+      await comment.delete();
+      try {
+        product.comments = product.comments.filter(
+          (id) => id.toString() !== commentId
+        );
+
+        product.totalReviews = Math.max(0, product.totalReviews - 1);
+
+        if (product.totalReviews > 0) {
+          const remainingComments = await Comment.find({
+            productId: product._id,
+            deleted: { $ne: true },
+          });
+          const totalRating = remainingComments.reduce(
+            (sum, c) => sum + c.rating,
+            0
+          );
+          product.ratings = (totalRating / product.totalReviews).toFixed(1);
+        } else {
+          product.ratings = 0;
+        }
+
+        await product.save();
+      } catch (error) {
+        await Comment.restore({ _id: commentId });
+        const err = new Error("Lỗi khi cập nhật sản phẩm: " + error.message);
+        err.statusCode = 500;
+        throw err;
+      }
+
+      return { success: true, message: "Xóa bình luận thành công" };
+    } catch (error) {
+      throw error;
+    }
+  },
 };

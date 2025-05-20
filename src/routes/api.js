@@ -103,6 +103,7 @@ const {
   createCommentAPI,
   getCommentAPI,
   getCommentsByProductAPI,
+  deleteCommentAPI,
 } = require("../controllers/user/comment.controller");
 const {
   validateCreateComment,
@@ -378,5 +379,11 @@ routerAPI.get(
   authenticateToken,
   checkRole(["admin", "staff, customer"]),
   getCommentsByProductAPI
+);
+routerAPI.delete(
+  "/comments/:commentId",
+  authenticateToken,
+  checkRole(["admin", "staff"]),
+  deleteCommentAPI
 );
 module.exports = routerAPI; //export default

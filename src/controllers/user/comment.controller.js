@@ -1,6 +1,7 @@
 const {
   createComment,
   getCommentsByProduct,
+  deleteComment,
 } = require("../../services/user/comment.service");
 
 module.exports = {
@@ -35,6 +36,29 @@ module.exports = {
           statusCode: true,
           pagination: result.pagination,
           result: result.result,
+        },
+      });
+    } catch (error) {
+      return res.status(error.statusCode || 500).json({
+        success: false,
+        error: {
+          code: error.statusCode || 500,
+          message: error.message,
+        },
+      });
+    }
+  },
+  deleteCommentAPI: async (req, res) => {
+    try {
+      const userId = req.user.id;
+      const isAdmin = req.user.role === "admin";
+      const { commentId } = req.params;
+
+      const result = await deleteComment(userId, commentId, isAdmin);
+      return res.status(200).json({
+        data: {
+          statusCode: true,
+          message: result.message,
         },
       });
     } catch (error) {
