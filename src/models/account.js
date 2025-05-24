@@ -63,6 +63,19 @@ const accountSchema = new mongoose.Schema(
       enum: ["active", "banned"],
       default: "active",
     },
+    statusE: {
+      type: String,
+      enum: ["online", "busy", "offline"],
+      default: "offline",
+    },
+    socketId: {
+      type: String,
+      default: null,
+    },
+    queueCount: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     timestamps: true,
