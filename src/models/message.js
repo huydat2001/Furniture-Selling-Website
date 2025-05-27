@@ -8,7 +8,7 @@ const messageSchema = new mongoose.Schema(
     },
     receiverId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Account", // Tham chiếu đến tài khoản nhận (nhân viên hoặc null nếu trong hàng chờ)
+      ref: "Account",
       default: null,
     },
     content: {
@@ -16,29 +16,8 @@ const messageSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
-
-    status: {
-      type: String,
-      enum: ["pending", "assigned", "processed", "queued"],
-      default: "pending", // pending: chờ xử lý, assigned: đã giao cho nhân viên, processed: đã xử lý, queued: trong hàng chờ
-    },
-
-    isRead: {
-      type: Boolean,
-      default: false,
-    },
-    assignedAt: {
-      type: Date,
-      default: null,
-    },
-    processedAt: {
-      type: Date,
-      default: null,
-    },
-    queuePosition: {
-      type: Number,
-      default: 0,
-    },
+    timestamp: { type: Date, default: Date.now },
+    isRead: { type: Boolean, default: false },
   },
   {
     timestamps: true,

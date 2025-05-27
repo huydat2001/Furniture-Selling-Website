@@ -7,8 +7,8 @@ const authenticateToken = (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET); // Xác thực token
-    req.user = decoded; // Lưu thông tin user vào req
+    const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
+    req.user = decoded;
     next();
   } catch (error) {
     return res.status(403).json({ message: "Token không hợp lệ" });

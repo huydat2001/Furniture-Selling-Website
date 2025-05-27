@@ -108,6 +108,12 @@ const {
 const {
   validateCreateComment,
 } = require("../middleware/schemas/comment.validate");
+const {
+  getMessages,
+  sendMessage,
+  unreadMessage,
+  getAllMessages,
+} = require("../controllers/user/socket.controller");
 const routerAPI = express.Router();
 
 routerAPI.post("/upload", uploadSingle, postUploadSingleFileAPI);
@@ -386,4 +392,10 @@ routerAPI.delete(
   checkRole(["admin", "staff"]),
   deleteCommentAPI
 );
+
+// chatting
+routerAPI.get("/receiver/:receiver", authenticateToken, getMessages);
+routerAPI.get("/unread/:receiver", authenticateToken, unreadMessage);
+routerAPI.get("/allmessage", authenticateToken, getAllMessages);
+routerAPI.post("/message/send/:id", authenticateToken, sendMessage);
 module.exports = routerAPI; //export default
