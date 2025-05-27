@@ -16,6 +16,8 @@ const {
   getAccountAPI,
   createAccountAPI,
   verifyEmailAPI,
+  forgotPasswordAPI,
+  resetPasswordAPI,
 } = require("../controllers/auth.controller");
 const {
   authenticateToken,
@@ -403,4 +405,6 @@ routerAPI.post("/message/send/:id", authenticateToken, sendMessage);
 
 routerAPI.post("/register", createAccountAPI);
 routerAPI.post("/verify-Email", verifyEmailAPI);
+routerAPI.post("/forgot-password", forgotPasswordAPI);
+routerAPI.post("/reset-password", resetPasswordAPI);
 module.exports = routerAPI; //export default

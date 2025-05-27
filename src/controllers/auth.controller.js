@@ -197,10 +197,85 @@ const verifyEmailAPI = async (req, res) => {
       .json({ message: "Đã có lỗi xảy ra. Vui lòng thử lại." });
   }
 };
+const generateResetToken = () => {
+  return Math.floor(100000 + Math.random() * 900000).toString(); // Mã 6 chữ số
+};
+const forgotPasswordAPI = async (req, res) => {
+  const { email } = req.body;
+  try {
+    const user = await Account.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ message: "Email không tồn tại" });
+    }
+
+    // Tạo mã đặt lại mật khẩu
+    const resetToken = generateResetToken();
+    const resetTokenExpires = Date.now() + 10 * 60 * 1000; // Hết hạn sau 10 phút
+
+    // Lưu mã và thời gian hết hạn vào database
+    user.resetPasswordToken = resetToken;
+    user.resetPasswordExpires = resetTokenExpires;
+    await user.save();
+    // Gửi email chứa mã đặt lại
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: "Yêu cầu đặt lại mật khẩu",
+      text: `Mã đặt lại mật khẩu của bạn là: ${resetToken}. Mã này sẽ hết hạn sau 10 phút.`,
+    };
+
+    await transporter.sendMail(mailOptions);
+    return res
+      .status(200)
+      .json({ success: true, message: "Đã gửi mã đặt lại mật khẩu về email" });
+  } catch (error) {
+    console.error("Error during forgot password:", error);
+    return res
+      .status(500)
+      .json({ message: "Đã có lỗi xảy ra. Vui lòng thử lại." });
+  }
+};
+
+// API đặt lại mật khẩu
+const resetPasswordAPI = async (req, res) => {
+  const { email, token, newPassword } = req.body;
+  try {
+    const user = await Account.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ message: "Email không tồn tại" });
+    }
+
+    if (
+      user.resetPasswordToken !== token ||
+      Date.now() > user.resetPasswordExpires
+    ) {
+      return res
+        .status(400)
+        .json({ message: "Mã đặt lại không đúng hoặc đã hết hạn" });
+    }
+
+    // Cập nhật mật khẩu mới
+    user.password = newPassword; // Middleware pre("save") sẽ tự động mã hóa
+    user.resetPasswordToken = null;
+    user.resetPasswordExpires = null;
+    await user.save();
+
+    return res
+      .status(200)
+      .json({ success: true, message: "Đặt lại mật khẩu thành công" });
+  } catch (error) {
+    console.error("Error during reset password:", error);
+    return res
+      .status(500)
+      .json({ message: "Đã có lỗi xảy ra. Vui lòng thử lại." });
+  }
+};
 module.exports = {
   login,
   refreshToken,
   getAccountAPI,
   createAccountAPI,
   verifyEmailAPI,
+  forgotPasswordAPI,
+  resetPasswordAPI,
 };
