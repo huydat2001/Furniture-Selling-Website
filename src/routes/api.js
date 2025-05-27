@@ -14,6 +14,8 @@ const {
   login,
   refreshToken,
   getAccountAPI,
+  createAccountAPI,
+  verifyEmailAPI,
 } = require("../controllers/auth.controller");
 const {
   authenticateToken,
@@ -398,4 +400,7 @@ routerAPI.get("/receiver/:receiver", authenticateToken, getMessages);
 routerAPI.get("/unread/:receiver", authenticateToken, unreadMessage);
 routerAPI.get("/allmessage", authenticateToken, getAllMessages);
 routerAPI.post("/message/send/:id", authenticateToken, sendMessage);
+
+routerAPI.post("/register", createAccountAPI);
+routerAPI.post("/verify-Email", verifyEmailAPI);
 module.exports = routerAPI; //export default
