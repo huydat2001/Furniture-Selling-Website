@@ -108,7 +108,34 @@ const createAccountAPI = async (req, res) => {
         100000 + Math.random() * 900000
       ).toString();
       const verificationTokenExpires = Date.now() + 10 * 60 * 1000; // Hết hạn sau 10 phút
-
+      const htmlContent = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px; background-color: #f9f9f9;">
+          <div style="text-align: center; padding-bottom: 20px; background-color:#80001C; color:#ffffff; border-radius: 8px 8px 0 0; padding: 20px;">
+             <img src="https://api.muji.com.vn/media/logo/stores/1/MUJI_Box-header.png" alt="Logo" style="width: 150px; margin-bottom: 10px;" />
+            <h2 style="color: #333; margin: 0;">Xác nhận đăng ký tài khoản</h2>
+          </div>
+          <div style="background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+            <p style="color: #555; font-size: 16px; line-height: 1.5;">
+              Xin chào ${username},<br/><br/>
+              Cảm ơn bạn đã đăng ký! Dưới đây là mã xác nhận của bạn:
+            </p>
+            <div style="text-align: center; margin: 20px 0;">
+              <span style="display: inline-block; background-color: #4CAF50; color: white; font-size: 24px; font-weight: bold; padding: 10px 20px; border-radius: 5px;">
+                ${verificationToken}
+              </span>
+            </div>
+            <p style="color: #555; font-size: 16px; line-height: 1.5;">
+              Mã này sẽ hết hạn sau <strong>10 phút</strong>. Vui lòng sử dụng mã này để hoàn tất đăng ký.
+            </p>
+          
+          </div>
+          <div style="text-align: center; padding-top: 20px; color: #999; font-size: 14px;">
+            <p>Nếu bạn không đăng ký tài khoản, vui lòng bỏ qua email này.</p>
+            <p>© ${new Date().getFullYear()} Nguyễn Huy Đạt.</p>
+            <p>Liên hệ: <a href="mailto:nguyenhuydatvp201@gmail.com" style="color: #4CAF50;">nguyenhuydatvp201@gmail.com</a></p>
+          </div>
+        </div>
+      `;
       existingUser.verificationToken = verificationToken;
       existingUser.verificationTokenExpires = verificationTokenExpires;
       existingUser.lastVerificationSent = Date.now();
@@ -118,7 +145,8 @@ const createAccountAPI = async (req, res) => {
         from: process.env.EMAIL_USER,
         to: email,
         subject: "Xác nhận đăng ký tài khoản",
-        text: `Mã xác nhận mới của bạn là: ${verificationToken}. Mã này sẽ hết hạn sau 10 phút.`,
+        // text: `Mã xác nhận mới của bạn là: ${verificationToken}. Mã này sẽ hết hạn sau 10 phút.`,
+        html: htmlContent,
       };
 
       await transporter.sendMail(mailOptions);
@@ -147,7 +175,8 @@ const createAccountAPI = async (req, res) => {
       from: process.env.EMAIL_USER,
       to: email,
       subject: "Xác nhận đăng ký tài khoản",
-      text: `Mã xác nhận của bạn là: ${verificationToken}. Mã này sẽ hết hạn sau 10 phút.`,
+      // text: `Mã xác nhận của bạn là: ${verificationToken}. Mã này sẽ hết hạn sau 10 phút.`,
+      html: htmlContent,
     };
 
     await transporter.sendMail(mailOptions);
@@ -217,11 +246,48 @@ const forgotPasswordAPI = async (req, res) => {
     user.resetPasswordExpires = resetTokenExpires;
     await user.save();
     // Gửi email chứa mã đặt lại
+    // Tạo nội dung email HTML
+    const htmlContent = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px; background-color: #f9f9f9;">
+        <!-- Header -->
+       <div style="text-align: center; padding-bottom: 20px; background-color:#80001C; color:#ffffff; border-radius: 8px 8px 0 0; padding: 20px;">
+          <img src="https://api.muji.com.vn/media/logo/stores/1/MUJI_Box-header.png" alt="Logo" style="width: 150px; margin-bottom: 10px;" />
+          <h2 style="color: #ffffff ; margin: 0;">Yêu cầu đặt lại mật khẩu</h2>
+        </div>
+
+        <!-- Body -->
+        <div style="background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+          <p style="color: #555; font-size: 16px; line-height: 1.5;">
+            Xin chào ${user.username || "Người dùng"},<br/><br/>
+            Chúng tôi nhận được yêu cầu đặt lại mật khẩu cho tài khoản của bạn. Dưới đây là mã đặt lại mật khẩu của bạn:
+          </p>
+          <div style="text-align: center; margin: 20px 0;">
+            <span style="display: inline-block; background-color: #4CAF50; color: white; font-size: 24px; font-weight: bold; padding: 10px 20px; border-radius: 5px;">
+              ${resetToken}
+            </span>
+          </div>
+          <p style="color: #555; font-size: 16px; line-height: 1.5;">
+            Mã này sẽ hết hạn sau <strong>10 phút</strong>. Vui lòng sử dụng mã này để đặt lại mật khẩu của bạn.
+          </p>
+     
+        </div>
+
+        <!-- Footer -->
+        <div style="text-align: center; padding-top: 20px; color: #999; font-size: 14px;">
+          <p>Nếu bạn không yêu cầu đặt lại mật khẩu, vui lòng bỏ qua email này.</p>
+          <p>© ${new Date().getFullYear()} Nguyễn Huy Đạt.</p>
+          <p>
+            Liên hệ: <a href="mailto:nguyenhuydatvp201@gmai.com" style="color: #4CAF50;">nguyenhuydatvp201@gmai.com</a>
+          </p>
+        </div>
+      </div>
+    `;
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: email,
       subject: "Yêu cầu đặt lại mật khẩu",
-      text: `Mã đặt lại mật khẩu của bạn là: ${resetToken}. Mã này sẽ hết hạn sau 10 phút.`,
+      // text: `Mã đặt lại mật khẩu của bạn là: ${resetToken}. Mã này sẽ hết hạn sau 10 phút.`,
+      html: htmlContent,
     };
 
     await transporter.sendMail(mailOptions);
