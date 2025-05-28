@@ -79,6 +79,7 @@ module.exports = {
   },
   updateUser: async (newUser) => {
     try {
+      console.log("newUser :>> ", newUser);
       const id = newUser.id;
       const user = await Account.findById(id);
       if (!user) {

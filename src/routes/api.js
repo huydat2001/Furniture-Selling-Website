@@ -144,7 +144,7 @@ routerAPI.post(
 routerAPI.put(
   "/user",
   authenticateToken,
-  checkRole(["admin", "staff"]),
+  checkRole(["admin", "staff", "customer"]),
   validateUpdateUser,
   putUpdateUserAPI
 );

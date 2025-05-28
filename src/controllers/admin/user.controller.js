@@ -103,6 +103,7 @@ module.exports = {
         country,
         role,
       } = req.body;
+      console.log("req.body :>> ", req.body);
       const finalAddress = address || {
         street: "",
         city: "",
@@ -123,7 +124,7 @@ module.exports = {
         phone,
         role,
       };
-
+      console.log("newUser controller :>> ", newUser);
       let result = await updateUser(newUser);
       if (!result) {
         throw new Error("Không thể cập nhật người dùng");
