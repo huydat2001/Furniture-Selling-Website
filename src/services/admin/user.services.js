@@ -79,15 +79,13 @@ module.exports = {
   },
   updateUser: async (newUser) => {
     try {
-      console.log("newUser :>> ", newUser);
       const id = newUser.id;
       const user = await Account.findById(id);
       if (!user) {
         throw new Error("Người dùng không tồn tại");
       }
-      console.log("newUser :>> ", newUser);
       user.fullName = newUser.fullName;
-      user.role = newUser.role; // Loại bỏ role trùng lặp
+      user.role = newUser.role;
       user.phone = newUser.phone;
       user.address = {
         city: newUser.address?.[0] ?? user.address?.city,
@@ -107,6 +105,37 @@ module.exports = {
         }
         user.password = newUser.password; // Middleware sẽ mã hóa
       }
+      await user.save();
+      return user;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  },
+  changePassword: async (passwordData) => {
+    try {
+      const { id, currentPassword, newPassword } = passwordData;
+      const user = await Account.findById(id);
+      if (!user) {
+        throw new Error("Người dùng không tồn tại");
+      }
+
+      // Kiểm tra mật khẩu hiện tại
+      const isCurrentPasswordCorrect = await bcrypt.compare(
+        currentPassword,
+        user.password
+      );
+      if (!isCurrentPasswordCorrect) {
+        throw new Error("Mật khẩu hiện tại không đúng");
+      }
+
+      // Kiểm tra mật khẩu mới có trùng mật khẩu cũ không
+      const isSamePassword = await bcrypt.compare(newPassword, user.password);
+      if (isSamePassword) {
+        throw new Error("Mật khẩu mới không được trùng với mật khẩu cũ");
+      }
+
+      // Cập nhật mật khẩu mới
+      user.password = newPassword; // Middleware sẽ mã hóa
       await user.save();
       return user;
     } catch (error) {

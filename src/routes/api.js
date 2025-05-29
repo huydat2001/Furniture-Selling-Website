@@ -4,6 +4,7 @@ const {
   postCreateUserAPI,
   putUpdateUserAPI,
   deleteUserAPI,
+  putChangePasswordAPI,
 } = require("../controllers/admin/user.controller");
 const {
   validateCreateUser,
@@ -148,6 +149,7 @@ routerAPI.put(
   validateUpdateUser,
   putUpdateUserAPI
 );
+routerAPI.put("/user/change-password", authenticateToken, putChangePasswordAPI);
 routerAPI.delete(
   "/user/:id",
   authenticateToken,

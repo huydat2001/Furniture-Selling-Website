@@ -3,6 +3,7 @@ const {
   creatUser,
   updateUser,
   deleteUSer,
+  changePassword,
 } = require("../../services/admin/user.services");
 
 module.exports = {
@@ -124,10 +125,37 @@ module.exports = {
         phone,
         role,
       };
-      console.log("newUser controller :>> ", newUser);
       let result = await updateUser(newUser);
       if (!result) {
         throw new Error("Không thể cập nhật người dùng");
+      }
+      return res.status(200).json({
+        statusCode: true,
+        data: result,
+      });
+    } catch (error) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: 400,
+          message: error.message,
+        },
+      });
+    }
+  },
+  putChangePasswordAPI: async (req, res) => {
+    try {
+      const { id, currentPassword, newPassword } = req.body;
+      console.log("req.body :>> ", req.body);
+
+      const passwordData = {
+        id,
+        currentPassword,
+        newPassword,
+      };
+      let result = await changePassword(passwordData);
+      if (!result) {
+        throw new Error("Không thể đổi mật khẩu");
       }
       return res.status(200).json({
         statusCode: true,
