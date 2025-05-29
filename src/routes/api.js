@@ -161,8 +161,8 @@ routerAPI.delete(
 
 routerAPI.get(
   "/category",
-  authenticateToken,
-  checkRole(["admin", "staff", "customer"]),
+  // authenticateToken,
+  // checkRole(["admin", "staff", "customer"]),
   getAllCategoriesAPI
 );
 routerAPI.post(
@@ -190,8 +190,8 @@ routerAPI.delete(
 
 routerAPI.get(
   "/discount",
-  authenticateToken,
-  checkRole(["admin", "staff", "customer"]),
+  // authenticateToken,
+  // checkRole(["admin", "staff", "customer"]),
   getAllDiscountAPI
 );
 routerAPI.post(
@@ -275,8 +275,8 @@ routerAPI.delete(
 
 routerAPI.get(
   "/user/product",
-  authenticateToken,
-  checkRole(["admin", "staff", "customer"]),
+  // authenticateToken,
+  // checkRole(["admin", "staff", "customer"]),
   getProductByQuyeryAPI
 );
 //cart
