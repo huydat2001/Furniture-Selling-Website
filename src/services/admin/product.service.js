@@ -113,7 +113,9 @@ module.exports = {
       if (queryString.ratings) {
         filter.ratings = Number(queryString.ratings);
       }
-
+      if (queryString.category) {
+        filter.category = queryString.category; // Lọc theo category
+      }
       if (queryString.name) {
         filter.name = queryString.name;
       }
