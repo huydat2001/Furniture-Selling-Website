@@ -106,7 +106,6 @@ const {
 } = require("../controllers/admin/analytics.controller");
 const {
   createCommentAPI,
-  getCommentAPI,
   getCommentsByProductAPI,
   deleteCommentAPI,
 } = require("../controllers/user/comment.controller");
@@ -388,8 +387,8 @@ routerAPI.post(
 );
 routerAPI.get(
   "/comments",
-  authenticateToken,
-  checkRole(["admin", "staff, customer"]),
+  // authenticateToken,
+  // checkRole(["admin", "staff, customer"]),
   getCommentsByProductAPI
 );
 routerAPI.delete(
