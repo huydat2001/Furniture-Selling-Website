@@ -108,10 +108,17 @@ module.exports = {
           filter.price.$lte = Number(queryString.maxPrice);
         }
       }
-
+      console.log("queryString :>> ", queryString);
       // Xử lý lọc theo đánh giá
-      if (queryString.ratings) {
-        filter.ratings = Number(queryString.ratings);
+      if (queryString.rating) {
+        // Sửa ratings thành rating
+        const ratingValue = Number(queryString.rating);
+        filter.ratings = {
+          // Vẫn sử dụng ratings vì đó là tên trường trong schema
+          $gte: ratingValue - 0.5,
+          $lte: ratingValue + 0.5,
+        };
+        console.log("Rating Filter Applied:", filter.ratings); // Debug
       }
       if (queryString.category) {
         filter.category = queryString.category; // Lọc theo category
