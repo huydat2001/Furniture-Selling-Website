@@ -119,7 +119,11 @@ module.exports = {
       if (queryString.name) {
         filter.name = queryString.name;
       }
-
+      // Thêm điều kiện lọc isFeatured
+      if (queryString.isFeatured !== undefined) {
+        filter.isFeatured =
+          queryString.isFeatured === "true" || queryString.isFeatured === true;
+      }
       // Tính toán sold dựa trên đơn hàng trong period
       let productSoldMap = {};
       if (queryString.period) {
