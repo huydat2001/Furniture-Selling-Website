@@ -108,6 +108,7 @@ const {
   createCommentAPI,
   getCommentsByProductAPI,
   deleteCommentAPI,
+  getRatingsDistributionAPI,
 } = require("../controllers/user/comment.controller");
 const {
   validateCreateComment,
@@ -397,6 +398,7 @@ routerAPI.delete(
   checkRole(["admin", "staff"]),
   deleteCommentAPI
 );
+routerAPI.get("/comments/ratings-distribution", getRatingsDistributionAPI);
 
 // chatting
 routerAPI.get("/receiver/:receiver", authenticateToken, getMessages);

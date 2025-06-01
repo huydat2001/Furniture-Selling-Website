@@ -135,4 +135,64 @@ module.exports = {
       throw error;
     }
   },
+  getAllRatingsDistribution: async () => {
+    try {
+      // Lấy tất cả comment và group theo rating
+      const ratingsDistribution = await Comment.aggregate([
+        {
+          $match: {
+            deleted: { $ne: true }, // Loại bỏ comment đã bị xóa
+          },
+        },
+        {
+          $group: {
+            _id: "$rating",
+            count: { $sum: 1 },
+          },
+        },
+        {
+          $sort: {
+            _id: -1, // Sắp xếp từ 5 sao đến 1 sao
+          },
+        },
+      ]);
+
+      // Tính tổng số đánh giá
+      const totalRatings = ratingsDistribution.reduce(
+        (sum, item) => sum + item.count,
+        0
+      );
+
+      // Tạo object chứa tỷ lệ phần trăm
+      const distribution = {
+        5: 0,
+        4: 0,
+        3: 0,
+        2: 0,
+        1: 0,
+      };
+
+      // Tính tỷ lệ phần trăm cho mỗi mức rating
+      ratingsDistribution.forEach((item) => {
+        distribution[item._id] =
+          totalRatings > 0
+            ? Number(((item.count / totalRatings) * 100).toFixed(2))
+            : 0;
+      });
+
+      return {
+        totalRatings,
+        distribution,
+        rawCounts: ratingsDistribution.reduce(
+          (acc, item) => ({
+            ...acc,
+            [item._id]: item.count,
+          }),
+          {}
+        ),
+      };
+    } catch (error) {
+      throw new Error("Lỗi khi lấy phân bố đánh giá: " + error.message);
+    }
+  },
 };

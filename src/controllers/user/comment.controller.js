@@ -2,6 +2,7 @@ const {
   createComment,
   getCommentsByProduct,
   deleteComment,
+  getAllRatingsDistribution,
 } = require("../../services/user/comment.service");
 
 module.exports = {
@@ -66,6 +67,29 @@ module.exports = {
         success: false,
         error: {
           code: error.statusCode || 500,
+          message: error.message,
+        },
+      });
+    }
+  },
+  getRatingsDistributionAPI: async (req, res) => {
+    try {
+      const result = await getAllRatingsDistribution();
+      return res.status(200).json({
+        data: {
+          statusCode: true,
+          result: {
+            totalRatings: result.totalRatings,
+            distribution: result.distribution,
+            rawCounts: result.rawCounts,
+          },
+        },
+      });
+    } catch (error) {
+      return res.status(500).json({
+        success: false,
+        error: {
+          code: 500,
           message: error.message,
         },
       });
